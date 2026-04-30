@@ -1,0 +1,163 @@
+/* Estilos generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Caja del Login */
+.login-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 350px;
+}
+
+.login-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+/* Formulario */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box; /* Evita que el input se salga del cuadro */
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Botón */
+.btn-login {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-login:hover {
+    background-color: #0056b3;
+}
+
+/* Mensajes de error */
+.error-msg {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+    border: 1px solid #f5c6cb;
+}
+
+/* Layout del Dashboard */
+.dashboard-body {
+    display: flex;
+    background-color: #f0f2f5;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar-logo {
+    width: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.sidebar-menu a {
+    display: block;
+    color: #bdc3c7;
+    text-decoration: none;
+    padding: 15px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.sidebar-menu a:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+/* Botón Logout */
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.btn-logout {
+    background-color: #e74c3c;
+    color: white !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b !important;
+}
+
+/* Contenido Principal */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.main-header h1 {
+    color: #2c3e50;
+    margin: 0;
+}
+
+.welcome-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-top: 20px;
+}

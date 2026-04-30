@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Control - Cuadra Erre</title>
+    <link rel="stylesheet" href="{% static 'gestion/estilos.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="{% static 'gestion/logo_cuadra_erre.png' %}" alt="Logo" class="sidebar-logo">
+            <h3>Cuadra Erre</h3>
+        </div>
+        
+        <nav class="sidebar-menu">
+            <a href="#"><i class="fas fa-user-md"></i> Terapeutas</a>
+            <a href="{% url 'lista_pacientes' %}"><i class="fas fa-users"></i> Pacientes</a>
+            <a href="#"><i class="fas fa-horse"></i> Caballos y Salud</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Agendar Sesiones</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'logout_view' %}" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header class="main-header">
+            <h1>Bienvenido, {{ request.session.admin_nombre }}</h1>
+            <p>Panel de Gestión de Equinoterapia</p>
+        </header>
+
+        <section class="content-cards">
+            <div class="welcome-card">
+                <h2>Estado del Sistema</h2>
+                <p>Selecciona una opción del menú de la izquierda para comenzar a gestionar los recursos.</p>
+            </div>
+        </section>
+    </div>
+
+</body>
+</html>

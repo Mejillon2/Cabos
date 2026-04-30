@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Administrador - Cuadra Erre</title>
+    <link rel="stylesheet" href="{% static 'gestion/estilos.css' %}">
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Admin Login</h2>
+
+    {% if error %}
+        <div class="error-msg">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login_view' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="nombre">Usuario</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: Test Admin" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña (ID)</label>
+            <input type="password" id="password" name="password" placeholder="Tu matrícula o ID" required>
+        </div>
+
+        <button type="submit" class="btn-login">Entrar al Sistema</button>
+    </form>
+</div>
+
+</body>
+</html>
