@@ -1,50 +1,58 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Pacientes - Cuadra Erre</title>
-    <link rel="stylesheet" href="{% static 'gestion/estilos.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="dashboard-body">
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>Cuadra Erre</h3>
-        </div>
-        <nav class="sidebar-menu">
-            <a href="{% url 'index' %}"><i class="fas fa-home"></i> Inicio</a>
-            <a href="#"><i class="fas fa-user-md"></i> Terapeutas</a>
-            <a href="{% url 'lista_pacientes' %}" class="active"><i class="fas fa-users"></i> Pacientes</a>
-            <a href="#"><i class="fas fa-horse"></i> Caballos</a>
-            <a href="{% url 'logout_view' %}" class="btn-logout">Cerrar Sesión</a>
-        </nav>
-    </div>
+{% extends 'gestion/base.html' %}
 
-    <div class="main-content">
-        <div class="welcome-card">
-            <h2>Gestión de Pacientes</h2>
-            <table class="tabla-moderna">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Fecha Nac.</th>
-                        <th>Diagnóstico</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pac in pacientes %}
-                    <tr>
-                        <td>{{ pac.0 }}</td>
-                        <td>{{ pac.1 }}</td>
-                        <td>{{ pac.2 }}</td>
-                        <td>{{ pac.3 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+{% block content %}
+<header class="main-header">
+    <h1>Gestión de Pacientes</h1>
+</header>
+
+<!-- Formulario para registrar pacientes -->
+<div class="welcome-card">
+    <div class="card-title">
+        <i class="fa-solid fa-child"></i> Registrar Nuevo Paciente
     </div>
-</body>
-</html>
+    <form method="POST" class="form-horizontal">
+        {% csrf_token %}
+        <input type="text" name="nombre" placeholder="Nombre completo del niño" required>
+        
+        <!-- Selector de Padres (viene de la vista que hicimos antes) -->
+        <select name="id_padre" required style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex: 1;">
+            <option value="">Selecciona al Padre/Tutor</option>
+            {% for padre in padres %}
+                <option value="{{ padre.0 }}">{{ padre.1 }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="date" name="fecha_nac" title="Fecha de Nacimiento" required>
+        <input type="text" name="diagnostico" placeholder="Diagnóstico inicial" required>
+        
+        <button type="submit" class="btn-logout" style="margin:0; background-color: var(--guinda-principal); cursor:pointer;">
+            Registrar Paciente
+        </button>
+    </form>
+</div>
+
+<!-- Tabla de pacientes registrados -->
+<div class="welcome-card" style="margin-top: 25px;">
+    <div class="card-title"><i class="fa-solid fa-list"></i> Lista de Pacientes</div>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead>
+            <tr style="text-align: left; border-bottom: 2px solid var(--guinda-principal);">
+                <th style="padding: 10px;">Paciente</th>
+                <th style="padding: 10px;">Padre/Tutor</th>
+                <th style="padding: 10px;">Diagnóstico</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pacientes %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px;">{{ p.0 }}</td>
+                <td style="padding: 10px;">{{ p.1 }}</td>
+                <td style="padding: 10px;">{{ p.2 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" style="text-align: center; padding: 20px;">No hay pacientes registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

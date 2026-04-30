@@ -1,28 +1,44 @@
 {% extends 'gestion/base.html' %}
 
-{% block contenido %}
+{% block content %}
+<header class="main-header">
+    <h1>Gestión de Padres / Tutores</h1>
+</header>
+
 <div class="welcome-card">
-    <h2><i class="fas fa-user-friends"></i> Directorio de Padres de Familia</h2>
-    <table class="tabla-moderna">
+    <div class="card-title">
+        <i class="fa-solid fa-user-plus"></i> Registrar Nuevo Padre
+    </div>
+    <form method="POST" class="form-horizontal">
+        {% csrf_token %}
+        <input type="text" name="nombre" placeholder="Nombre completo del tutor" required 
+               style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 300px;">
+        <button type="submit" class="btn-login" style="width: auto; padding: 10px 20px;">Registrar</button>
+    </form>
+</div>
+
+<div class="welcome-card" style="margin-top: 20px;">
+    <div class="card-title">
+        <i class="fa-solid fa-address-book"></i> Directorio de Padres
+    </div>
+    <table class="data-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Email</th>
+            <tr style="border-bottom: 2px solid var(--guinda-principal); text-align: left;">
+                <th style="padding: 10px;">ID</th>
+                <th style="padding: 10px;">Nombre</th>
             </tr>
         </thead>
         <tbody>
             {% for p in padres %}
-            <tr>
-                <td>{{ p.0 }}</td>
-                <td>{{ p.1 }}</td>
-                <td>{{ p.2 }}</td>
-                <td>{{ p.3 }}</td>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px;">{{ p.0 }}</td>
+                <td style="padding: 10px;">{{ p.1 }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4">No hay padres registrados aún.</td>
+                <td colspan="2" style="padding: 20px; text-align: center; color: #888;">
+                    No hay padres registrados para asociar a los pacientes.
+                </td>
             </tr>
             {% endfor %}
         </tbody>

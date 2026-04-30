@@ -1,21 +1,49 @@
 {% extends 'gestion/base.html' %}
-{% block contenido %}
+{% block content %}
 <div class="welcome-card">
     <h2><i class="fas fa-horse"></i> Inventario y Salud de Caballos</h2>
     <table class="tabla-moderna">
         <thead>
-            <tr><th>Caballo</th><th>Raza</th><th>Disponibilidad</th><th>Estado de Salud</th></tr>
+            <tr>
+                <th>Caballo</th>
+                <th>Raza</th>
+                <th>Disponibilidad</th>
+                <th>Estado de Salud</th>
+            </tr>
         </thead>
         <tbody>
             {% for c in caballos %}
             <tr>
-                <td>{{ c.0 }}</td>
+                <td><strong>{{ c.0 }}</strong></td>
                 <td>{{ c.1 }}</td>
-                <td>{{ c.2 }}</td>
-                <td>{{ c.3|default:"Sin registro reciente" }}</td>
+                <td>
+                    {% if c.2 == 'Disponible' %}
+                        <span class="badge-verde">{{ c.2 }}</span>
+                    {% else %}
+                        <span class="badge-rojo">{{ c.2 }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if c.3 and c.3 != "None" %}
+                        {{ c.3 }}
+                    {% else %}
+                        <span class="text-muted italic">Sin registro reciente</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center;">No hay caballos registrados en el sistema.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<style>
+    .badge-verde { color: #28a745; font-weight: bold; }
+    .badge-rojo { color: #dc3545; font-weight: bold; }
+    .text-muted { color: #6c757d; }
+    .italic { font-style: italic; }
+</style>
 {% endblock %}

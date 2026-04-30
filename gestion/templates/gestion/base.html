@@ -29,6 +29,12 @@
             <a href="{% url 'lista_caballos' %}">
                 <i class="fa-solid fa-horse"></i> Caballos
             </a>
+            <a href="{% url 'lista_padres' %}">
+                <i class="fa-solid fa-person-breastfeeding"></i> Padres
+            </a>
+            <a href="{% url 'agendar' %}" class="{% if request.resolver_match.url_name == 'agendar' %}active{% endif %}">
+                <i class="fa-solid fa-calendar-plus"></i> Agendar Sesión
+            </a>
         </nav>
 
         <div class="sidebar-footer">

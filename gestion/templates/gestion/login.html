@@ -3,41 +3,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login | Cuadra Erre</title>
-    <!-- Enlace a tu CSS -->
+    <title>Acceso | Cuadra Erre</title>
     <link rel="stylesheet" href="{% static 'gestion/estilos.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos rápidos para centrar el login usando tus variables */
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--beige-fondo);
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 8px solid var(--guinda-principal);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .login-box img { max-width: 120px; margin-bottom: 20px; }
+        .login-box h2 { color: var(--guinda-principal); margin-bottom: 25px; }
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: block;
+            box-sizing: border-box;
+        }
+        .btn-entrar {
+            background-color: var(--guinda-principal);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-entrar:hover { background-color: var(--guinda-oscuro); }
+    </style>
 </head>
-<body class="login-body">
-
-    <div class="login-container">
-        <!-- Logo con el caballo -->
-        <div class="login-logo">
-            <img src="{% static 'Imagenes/logo_cuadra.png' %}" alt="Cuadra Erre Logo">
-        </div>
-
+<body class="login-wrapper">
+    <div class="login-box">
+        <img src="{% static 'gestion/Imagenes/logo_cuadra.png' %}" alt="Logo">
         <h2>Acceso al Sistema</h2>
-
-        {% if error %}
-        <div class="error-msg">
-            {{ error }}
-        </div>
-        {% endif %}
-
         <form method="POST">
             {% csrf_token %}
-            <div class="form-group">
-                <label>Usuario</label>
-                <input type="text" name="username" placeholder="Ingresa tu usuario" required>
-            </div>
-
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" name="password" placeholder="••••••••" required>
-            </div>
-
-            <button type="submit" class="btn-login">ENTRAR</button>
+            <input type="text" name="usuario" placeholder="Usuario" required>
+            <input type="password" name="contraseña" placeholder="Contraseña" required>
+            <button type="submit" class="btn-entrar">ENTRAR</button>
         </form>
     </div>
-
 </body>
 </html>

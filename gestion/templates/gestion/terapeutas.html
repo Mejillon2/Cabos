@@ -1,14 +1,43 @@
 {% extends 'gestion/base.html' %}
-{% block contenido %}
-<div class="welcome-card">
-    <h2><i class="fas fa-user-md"></i> Equipo de Terapeutas</h2>
-    <table class="tabla-moderna">
+
+{% block content %}
+<header class="main-header">
+    <h1>Gestión de Terapeutas</h1>
+</header>
+
+<div class="card-container">
+    <div class="card-title"><i class="fa-solid fa-user-plus"></i> Registrar Nuevo Terapeuta</div>
+    <form method="POST" class="form-horizontal">
+        {% csrf_token %}
+        <input type="text" name="nombre" placeholder="Nombre Completo" required>
+        <input type="text" name="especialidad" placeholder="Especialidad (ej. Psicología)" required>
+        <button type="submit" class="btn-login" style="width: auto; padding: 10px 20px;">Registrar</button>
+    </form>
+</div>
+
+<div class="card-container" style="margin-top: 20px;">
+    <div class="card-title"><i class="fa-solid fa-list"></i> Terapeutas en el Sistema</div>
+    <table class="data-table">
         <thead>
-            <tr><th>ID</th><th>Nombre</th><th>Especialidad</th></tr>
+            <tr>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Estado</th>
+            </tr>
         </thead>
         <tbody>
             {% for t in terapeutas %}
-            <tr><td>{{ t.0 }}</td><td>{{ t.1 }}</td><td>{{ t.2 }}</td></tr>
+            <tr>
+                <td>{{ t.1 }}</td>
+                <td>{{ t.2 }}</td>
+                <td>
+                    {% if t.3 == 1 %}
+                        <span class="status-pill available">Disponible</span>
+                    {% else %}
+                        <span class="status-pill unavailable">No Disponible</span>
+                    {% endif %}
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
