@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cuadra Erre - Panel</title>
+    <link rel="stylesheet" href="{% static 'gestion/estilos.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- ESTO SE REPITE EN TODAS LAS PÁGINAS -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>Cuadra Erre</h3>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'index' %}"><i class="fas fa-home"></i> Inicio</a>
+            <a href="{% url 'lista_terapeutas' %}"><i class="fas fa-user-md"></i> Terapeutas</a>
+            <a href="{% url 'lista_pacientes' %}"><i class="fas fa-users"></i> Pacientes</a>
+            <a href="{% url 'lista_padres' %}"><i class="fas fa-user-friends"></i> Padres</a>
+            <a href="{% url 'lista_caballos' %}"><i class="fas fa-horse"></i> Caballos</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="{% url 'logout_view' %}" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Salir</a>
+        </div>
+    </div>
+
+    <!-- ESTO ES EL HUECO QUE SE LLENA SEGÚN LA PÁGINA -->
+    <div class="main-content">
+        {% block contenido %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>
