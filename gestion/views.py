@@ -7,11 +7,30 @@ def index(request):
     
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT ID_PERSONA, NOMBRE, ROL FROM PERSONAS")
-    personas = cur.fetchall()
+    
+    # Terapeutas totales
+    cur.execute("SELECT COUNT(*) FROM TERAPEUTAS_INFO")
+    total_terapeutas = cur.fetchone()[0]
+    
+    # Pacientes (puedes filtrar por los que tengan alguna condición específica)
+    cur.execute("SELECT COUNT(*) FROM PACIENTES_INFO")
+    pacientes_activos = cur.fetchone()[0]
+    
+    # Caballos con estado físico 'Saludable'
+    # Ajusta 'Saludable' según lo que tengas escrito en tu base de datos Firebird
+    cur.execute("SELECT COUNT(*) FROM SALUD_CABALLO WHERE ESTADO_FISICO = 'Saludable'")
+    caballos_ok = cur.fetchone()[0]
+    
     conn.close()
     
-    return render(request, 'gestion/index.html', {'personas': personas})
+    context = {
+        'total_terapeutas': total_terapeutas,
+        'pacientes_activos': pacientes_activos,
+        'caballos_ok': caballos_ok,
+        'admin_nombre': request.session.get('admin_nombre')
+    }
+    
+    return render(request, 'gestion/index.html', context)
 
 def login_view(request):
     error = None

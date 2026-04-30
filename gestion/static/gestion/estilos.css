@@ -1,161 +1,46 @@
-/* ============================================================
-   1. VARIABLES DE MARCA (PALETA CUADRA ERRE)
-   ============================================================ */
+/* =========================================
+   VARIABLES Y ESTILOS BASE 
+   ========================================= */
 :root {
-    --guinda-principal: #8B0020;  /* Color del logo y marca */
+    --guinda-principal: #8B0020;
     --guinda-oscuro: #5D0015;
-    --dorado-cuadra: #C19A6B;    /* Tono bronce elegante */
-    --beige-fondo: #fdfaf5;      /* Fondo rústico suave */
-    --texto-oscuro: #3e2723;     /* Marrón café muy oscuro */
-    --sidebar-bg: #1a1a1a;       /* Negro profundo para la sidebar */
-    --blanco: #ffffff;
+    --dorado-cuadra: #C19A6B;
+    --beige-fondo: #fdfaf5;
+    --texto-oscuro: #3e2723;
+    --sidebar-bg: #1a1a1a;
 }
 
-/* ============================================================
-   2. ESTILOS GENERALES Y RESET
-   ============================================================ */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     background-color: var(--beige-fondo);
-    color: var(--texto-oscuro);
     margin: 0;
-    padding: 0;
-    height: 100vh;
 }
 
-/* ============================================================
-   3. PÁGINA DE LOGIN (IDENTIDAD VISUAL FUERTE)
-   ============================================================ */
-/* Clase específica para el body del login */
-.login-body {
-    background-color: var(--guinda-principal); /* Fondo guinda completo */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-.login-container {
-    background-color: var(--blanco);
-    padding: 2.5rem;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    max-width: 380px;
-    text-align: center;
-}
-
-/* Contenedor del logo en el login */
-.login-logo {
-    color: white; /* Esto hará que el texto alternativo sea blanco */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px;
-}
-
-.login-logo img {
-    width: 200px; /* Tamaño optimizado para el logo del caballo */
-    height: auto;
-}
-
-/* Campos de entrada del formulario */
-.form-group {
-    margin-bottom: 1.2rem;
-    text-align: left;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--texto-oscuro);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.85rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: var(--guinda-principal);
-    box-shadow: 0 0 5px rgba(139, 0, 32, 0.2);
-}
-
-/* Botón de entrada */
-.btn-login {
-    width: 100%;
-    padding: 0.9rem;
-    background-color: var(--guinda-principal);
-    color: var(--blanco);
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-.btn-login:hover {
-    background-color: var(--guinda-oscuro);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Mensajes de error */
-.error-msg {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 0.75rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    font-size: 0.85rem;
-    border: 1px solid #f5c6cb;
-}
-
-/* ============================================================
-   4. DASHBOARD / PANEL DE CONTROL
-   ============================================================ */
+/* =========================================
+   LAYOUT DEL DASHBOARD 
+   ========================================= */
 .dashboard-body {
     display: flex;
-    background-color: var(--beige-fondo);
     height: 100vh;
-    overflow: hidden;
 }
 
-/* Sidebar Estilo Cuadra Erre */
 .sidebar {
     width: 260px;
     background-color: var(--sidebar-bg);
-    color: var(--blanco);
+    color: white;
     display: flex;
     flex-direction: column;
-    box-shadow: 4px 0 10px rgba(0,0,0,0.2);
-    z-index: 100;
 }
 
 .sidebar-header {
-    background-color: var(--guinda-principal); /* Cabecera guinda en sidebar */
-    padding: 30px 15px;
+    background-color: var(--guinda-principal);
+    padding: 20px;
     text-align: center;
 }
 
 .sidebar-logo {
-    width: 160px;
+    max-width: 150px;
     height: auto;
-}
-
-/* Menú de Navegación */
-.sidebar-menu {
-    padding: 15px 0;
-    flex-grow: 1;
 }
 
 .sidebar-menu a {
@@ -165,46 +50,28 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    transition: 0.3s ease;
-    border-left: 5px solid transparent;
-}
-
-.sidebar-menu a i {
-    font-size: 1.2rem;
-    color: var(--dorado-cuadra); /* Iconos dorados */
+    transition: 0.3s;
+    border-left: 4px solid transparent;
 }
 
 .sidebar-menu a:hover {
     background-color: #252525;
     color: var(--dorado-cuadra);
-    border-left: 5px solid var(--dorado-cuadra); /* Indicador dorado al pasar el mouse */
-    padding-left: 35px;
-}
-
-/* Footer de Sidebar (Logout) */
-.sidebar-footer {
-    padding: 20px;
-    border-top: 1px solid #333;
+    border-left: 4px solid var(--dorado-cuadra);
 }
 
 .btn-logout {
     background-color: #c0392b;
-    color: var(--blanco) !important;
+    color: white !important;
+    margin: 20px;
+    padding: 10px !important;
     text-align: center;
-    font-weight: bold;
-    border-radius: 8px;
-    display: block;
-    padding: 12px !important;
+    border-radius: 5px;
 }
 
-.btn-logout:hover {
-    background-color: #a93226 !important;
-    transform: scale(1.02);
-}
-
-/* ============================================================
-   5. CONTENIDO PRINCIPAL Y TARJETAS
-   ============================================================ */
+/* =========================================
+   CONTENIDO Y TARJETAS DE ESTADO
+   ========================================= */
 .main-content {
     flex-grow: 1;
     padding: 40px;
@@ -213,53 +80,72 @@ body {
 
 .main-header h1 {
     color: var(--guinda-principal);
-    font-size: 2rem;
-    margin-bottom: 25px;
-    border-bottom: 2px solid var(--dorado-cuadra);
-    display: inline-block;
-    padding-bottom: 5px;
+    margin-bottom: 5px;
 }
 
-/* Tarjetas de información (Equipo, Pacientes, etc.) */
-.card-container, .welcome-card {
-    background: var(--blanco);
+.welcome-card {
+    background: white;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    border-top: 5px solid var(--guinda-principal); /* Detalle guinda superior */
-    margin-top: 20px;
+    border-top: 5px solid var(--guinda-principal);
 }
 
 .card-title {
-    color: var(--guinda-principal);
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: bold;
+    color: var(--texto-oscuro);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* CONTENEDOR DE LOS CUADROS (STATS) */
+.stats-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.stat-box {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 20px;
+    min-width: 220px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-left: 5px solid var(--guinda-principal);
+    transition: 0.3s;
 }
 
-.card-title i {
-    color: var(--dorado-cuadra);
+.stat-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* Estilo para tablas de datos */
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
+.stat-box i {
+    font-size: 2rem;
+    color: var(--guinda-principal);
 }
 
-.data-table th {
-    text-align: left;
-    padding: 12px;
-    background-color: #f8f9fa;
-    border-bottom: 2px solid var(--dorado-cuadra);
+.stat-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-text strong {
+    font-size: 1.6rem;
     color: var(--texto-oscuro);
 }
 
-.data-table td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
+.stat-text span {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: bold;
 }

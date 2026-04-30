@@ -1,48 +1,51 @@
+{% extends 'gestion/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel de Control - Cuadra Erre</title>
-    <link rel="stylesheet" href="{% static 'gestion/estilos.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="dashboard-body">
 
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <img src="{% static 'gestion/logo_cuadra_erre.png' %}" alt="Logo" class="sidebar-logo">
-            <h3>Cuadra Erre</h3>
-        </div>
+{% block content %}
+<!-- Cabecera de Bienvenida Dinámica -->
+<header class="main-header">
+    <h1>Bienvenido, {{ admin_nombre }}</h1>
+    <p>Panel de Gestión de Equinoterapia</p>
+</header>
+
+<div class="welcome-card">
+    <div class="card-title">
+        <i class="fa-solid fa-chart-line"></i>
+        Estado del Sistema
+    </div>
+    
+    <p>Resumen actual de los recursos de la clínica. Selecciona una opción del menú lateral para realizar cambios.</p>
+
+    <!-- Contenedor de las tarjetas de estado -->
+    <div class="stats-container">
         
-        <nav class="sidebar-menu">
-            <a href="{% url 'lista_terapeutas' %}"><i class="fas fa-user-md"></i> Terapeutas</a>
-            <a href="{% url 'lista_pacientes' %}"><i class="fas fa-users"></i> Pacientes</a>
-            <a href="{% url 'lista_caballos' %}"><i class="fas fa-horse"></i> Caballos y Salud</a>
-            <a href="#"><i class="fas fa-calendar-alt"></i> Agendar Sesiones</a>
-            <a href="{% url 'lista_padres' %}"><i class="fas fa-user-friends"></i> Padres</a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="{% url 'logout_view' %}" class="btn-logout">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </a>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <header class="main-header">
-            <h1>Bienvenido, {{ request.session.admin_nombre }}</h1>
-            <p>Panel de Gestión de Equinoterapia</p>
-        </header>
-
-        <section class="content-cards">
-            <div class="welcome-card">
-                <h2>Estado del Sistema</h2>
-                <p>Selecciona una opción del menú de la izquierda para comenzar a gestionar los recursos.</p>
+        <!-- Tarjeta Terapeutas -->
+        <div class="stat-box">
+            <i class="fa-solid fa-user-doctor"></i>
+            <div class="stat-text">
+                <strong>{{ total_terapeutas }}</strong>
+                <span>Terapeutas</span>
             </div>
-        </section>
-    </div>
+        </div>
 
-</body>
-</html>
+        <!-- Tarjeta Pacientes -->
+        <div class="stat-box">
+            <i class="fa-solid fa-users"></i>
+            <div class="stat-text">
+                <strong>{{ pacientes_activos }}</strong>
+                <span>Pacientes con Sesión</span>
+            </div>
+        </div>
+
+        <!-- Tarjeta Caballos -->
+        <div class="stat-box">
+            <i class="fa-solid fa-horse"></i>
+            <div class="stat-text">
+                <strong>{{ caballos_ok }}</strong>
+                <span>Caballos Saludables</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
