@@ -1,72 +1,112 @@
-/* Estilos generales */
+/* ============================================================
+   1. VARIABLES DE MARCA (PALETA CUADRA ERRE)
+   ============================================================ */
+:root {
+    --guinda-principal: #8B0020;  /* Color del logo y marca */
+    --guinda-oscuro: #5D0015;
+    --dorado-cuadra: #C19A6B;    /* Tono bronce elegante */
+    --beige-fondo: #fdfaf5;      /* Fondo rústico suave */
+    --texto-oscuro: #3e2723;     /* Marrón café muy oscuro */
+    --sidebar-bg: #1a1a1a;       /* Negro profundo para la sidebar */
+    --blanco: #ffffff;
+}
+
+/* ============================================================
+   2. ESTILOS GENERALES Y RESET
+   ============================================================ */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f6;
+    background-color: var(--beige-fondo);
+    color: var(--texto-oscuro);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
+
+/* ============================================================
+   3. PÁGINA DE LOGIN (IDENTIDAD VISUAL FUERTE)
+   ============================================================ */
+/* Clase específica para el body del login */
+.login-body {
+    background-color: var(--guinda-principal); /* Fondo guinda completo */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
 }
 
-/* Caja del Login */
 .login-container {
-    background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: var(--blanco);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     width: 100%;
-    max-width: 350px;
-}
-
-.login-container h2 {
+    max-width: 380px;
     text-align: center;
-    color: #333;
-    margin-bottom: 1.5rem;
 }
 
-/* Formulario */
+/* Contenedor del logo en el login */
+.login-logo {
+    color: white; /* Esto hará que el texto alternativo sea blanco */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+}
+
+.login-logo img {
+    width: 200px; /* Tamaño optimizado para el logo del caballo */
+    height: auto;
+}
+
+/* Campos de entrada del formulario */
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    text-align: left;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #666;
+    color: var(--texto-oscuro);
+    font-weight: 600;
     font-size: 0.9rem;
 }
 
 .form-group input {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.85rem;
     border: 1px solid #ddd;
-    border-radius: 6px;
-    box-sizing: border-box; /* Evita que el input se salga del cuadro */
-    transition: border-color 0.3s;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--guinda-principal);
+    box-shadow: 0 0 5px rgba(139, 0, 32, 0.2);
 }
 
-/* Botón */
+/* Botón de entrada */
 .btn-login {
     width: 100%;
-    padding: 0.75rem;
-    background-color: #007bff;
-    color: white;
+    padding: 0.9rem;
+    background-color: var(--guinda-principal);
+    color: var(--blanco);
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s;
+    text-transform: uppercase;
+    transition: 0.3s;
 }
 
 .btn-login:hover {
-    background-color: #0056b3;
+    background-color: var(--guinda-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Mensajes de error */
@@ -74,75 +114,97 @@ body {
     background-color: #f8d7da;
     color: #721c24;
     padding: 0.75rem;
-    border-radius: 6px;
+    border-radius: 8px;
     margin-bottom: 1rem;
     font-size: 0.85rem;
-    text-align: center;
     border: 1px solid #f5c6cb;
 }
 
-/* Layout del Dashboard */
+/* ============================================================
+   4. DASHBOARD / PANEL DE CONTROL
+   ============================================================ */
 .dashboard-body {
     display: flex;
-    background-color: #f0f2f5;
+    background-color: var(--beige-fondo);
     height: 100vh;
-    margin: 0;
+    overflow: hidden;
 }
 
-/* Sidebar */
+/* Sidebar Estilo Cuadra Erre */
 .sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: var(--blanco);
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 10px rgba(0,0,0,0.2);
+    z-index: 100;
 }
 
 .sidebar-header {
+    background-color: var(--guinda-principal); /* Cabecera guinda en sidebar */
+    padding: 30px 15px;
     text-align: center;
-    margin-bottom: 30px;
 }
 
 .sidebar-logo {
-    width: 80px;
-    border-radius: 50%;
-    margin-bottom: 10px;
+    width: 160px;
+    height: auto;
+}
+
+/* Menú de Navegación */
+.sidebar-menu {
+    padding: 15px 0;
+    flex-grow: 1;
 }
 
 .sidebar-menu a {
-    display: block;
-    color: #bdc3c7;
+    color: #d7ccc8;
     text-decoration: none;
-    padding: 15px;
-    margin-bottom: 5px;
-    border-radius: 8px;
-    transition: 0.3s;
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.3s ease;
+    border-left: 5px solid transparent;
+}
+
+.sidebar-menu a i {
+    font-size: 1.2rem;
+    color: var(--dorado-cuadra); /* Iconos dorados */
 }
 
 .sidebar-menu a:hover {
-    background-color: #34495e;
-    color: white;
+    background-color: #252525;
+    color: var(--dorado-cuadra);
+    border-left: 5px solid var(--dorado-cuadra); /* Indicador dorado al pasar el mouse */
+    padding-left: 35px;
 }
 
-/* Botón Logout */
+/* Footer de Sidebar (Logout) */
 .sidebar-footer {
-    margin-top: auto;
+    padding: 20px;
+    border-top: 1px solid #333;
 }
 
 .btn-logout {
-    background-color: #e74c3c;
-    color: white !important;
+    background-color: #c0392b;
+    color: var(--blanco) !important;
     text-align: center;
     font-weight: bold;
+    border-radius: 8px;
+    display: block;
+    padding: 12px !important;
 }
 
 .btn-logout:hover {
-    background-color: #c0392b !important;
+    background-color: #a93226 !important;
+    transform: scale(1.02);
 }
 
-/* Contenido Principal */
+/* ============================================================
+   5. CONTENIDO PRINCIPAL Y TARJETAS
+   ============================================================ */
 .main-content {
     flex-grow: 1;
     padding: 40px;
@@ -150,14 +212,54 @@ body {
 }
 
 .main-header h1 {
-    color: #2c3e50;
-    margin: 0;
+    color: var(--guinda-principal);
+    font-size: 2rem;
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--dorado-cuadra);
+    display: inline-block;
+    padding-bottom: 5px;
 }
 
-.welcome-card {
-    background: white;
+/* Tarjetas de información (Equipo, Pacientes, etc.) */
+.card-container, .welcome-card {
+    background: var(--blanco);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-top: 5px solid var(--guinda-principal); /* Detalle guinda superior */
     margin-top: 20px;
+}
+
+.card-title {
+    color: var(--guinda-principal);
+    font-size: 1.6rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card-title i {
+    color: var(--dorado-cuadra);
+}
+
+/* Estilo para tablas de datos */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid var(--dorado-cuadra);
+    color: var(--texto-oscuro);
+}
+
+.data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
 }

@@ -17,14 +17,14 @@ def login_view(request):
     error = None
     
     if request.method == 'POST':
-        nombre = request.POST.get('nombre')
+        nombre = request.POST.get('username')
         password = request.POST.get('password')
         
         try:
             conn = get_connection()
             cur = conn.cursor()
             
-            query = "SELECT ID_PERSONA, NOMBRE FROM PERSONAS WHERE NOMBRE = ? AND ID_PERSONA = ? AND ES_ADMIN = 1"
+            query = "SELECT ID_PERSONA, NOMBRE, ES_ADMIN FROM Personas WHERE NOMBRE = ? AND PASSWORD = ?"
             cur.execute(query, (nombre, password))
             user = cur.fetchone()
             conn.close()

@@ -3,34 +3,59 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cuadra Erre - Panel</title>
+    <title>Dashboard | Cuadra Erre</title>
     <link rel="stylesheet" href="{% static 'gestion/estilos.css' %}">
+    <!-- Iconos sugeridos (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="dashboard-body">
 
-    <!-- ESTO SE REPITE EN TODAS LAS PÁGINAS -->
-    <div class="sidebar">
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
         <div class="sidebar-header">
-            <h3>Cuadra Erre</h3>
+            <img src="{% static 'gestion/Imagenes/logo_cuadra.png' %}" alt="Logo" class="sidebar-logo">
         </div>
-        <nav class="sidebar-menu">
-            <a href="{% url 'index' %}"><i class="fas fa-home"></i> Inicio</a>
-            <a href="{% url 'lista_terapeutas' %}"><i class="fas fa-user-md"></i> Terapeutas</a>
-            <a href="{% url 'lista_pacientes' %}"><i class="fas fa-users"></i> Pacientes</a>
-            <a href="{% url 'lista_padres' %}"><i class="fas fa-user-friends"></i> Padres</a>
-            <a href="{% url 'lista_caballos' %}"><i class="fas fa-horse"></i> Caballos</a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="{% url 'logout_view' %}" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Salir</a>
-        </div>
-    </div>
 
-    <!-- ESTO ES EL HUECO QUE SE LLENA SEGÚN LA PÁGINA -->
-    <div class="main-content">
-        {% block contenido %}
+        <nav class="sidebar-menu">
+            <a href="{% url 'index' %}">
+                <i class="fa-solid fa-house"></i> Inicio
+            </a>
+            <a href="{% url 'lista_terapeutas' %}">
+                <i class="fa-solid fa-user-doctor"></i> Terapeutas
+            </a>
+            <a href="{% url 'lista_pacientes' %}">
+                <i class="fa-solid fa-users"></i> Pacientes
+            </a>
+            <a href="{% url 'lista_caballos' %}">
+                <i class="fa-solid fa-horse"></i> Caballos
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'logout_view' %}" class="btn-logout">
+                <i class="fa-solid fa-right-from-bracket"></i> Salir
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <header class="main-header">
+            <h1>Panel de Control</h1>
+        </header>
+
+        <section class="welcome-card">
+            <div class="card-title">
+                <i class="fa-solid fa-circle-check"></i>
+                Bienvenido al Sistema de Equinoterapia
+            </div>
+            <p>Selecciona una opción del menú para gestionar la información.</p>
+        </section>
+
+        <!-- Aquí se insertaría el contenido de cada página -->
+        {% block content %}
         {% endblock %}
-    </div>
+    </main>
 
 </body>
 </html>
