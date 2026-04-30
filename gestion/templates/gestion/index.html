@@ -16,10 +16,11 @@
         </div>
         
         <nav class="sidebar-menu">
-            <a href="#"><i class="fas fa-user-md"></i> Terapeutas</a>
+            <a href="{% url 'lista_terapeutas' %}"><i class="fas fa-user-md"></i> Terapeutas</a>
             <a href="{% url 'lista_pacientes' %}"><i class="fas fa-users"></i> Pacientes</a>
-            <a href="#"><i class="fas fa-horse"></i> Caballos y Salud</a>
+            <a href="{% url 'lista_caballos' %}"><i class="fas fa-horse"></i> Caballos y Salud</a>
             <a href="#"><i class="fas fa-calendar-alt"></i> Agendar Sesiones</a>
+            <a href="{% url 'lista_padres' %}"><i class="fas fa-user-friends"></i> Padres</a>
         </nav>
 
         <div class="sidebar-footer">

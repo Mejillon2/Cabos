@@ -1,7 +1,15 @@
+import os
 import firebird.driver as fdb
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DB_PATH = '127.0.0.1:/var/firebird/data/sistema_equinoterapia.fdb'
 
 def get_connection():
-    # Nota: Usamos la ruta absoluta del archivo que movimos
-    return fdb.connect('localhost:/var/firebird/data/sistema_equinoterapia.fdb', 
-                       user='SYSDBA', 
-                       password='1234')
+    return fdb.connect(
+        database=DB_PATH,
+        user='SYSDBA',
+        password='1234',
+        charset='UTF8'
+    )
