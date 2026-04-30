@@ -1,0 +1,16 @@
+{% extends 'gestion/base.html' %}
+{% block contenido %}
+<div class="welcome-card">
+    <h2><i class="fas fa-user-md"></i> Equipo de Terapeutas</h2>
+    <table class="tabla-moderna">
+        <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Especialidad</th></tr>
+        </thead>
+        <tbody>
+            {% for t in terapeutas %}
+            <tr><td>{{ t.0 }}</td><td>{{ t.1 }}</td><td>{{ t.2 }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

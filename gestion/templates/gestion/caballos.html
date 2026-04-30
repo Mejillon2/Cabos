@@ -1,0 +1,21 @@
+{% extends 'gestion/base.html' %}
+{% block contenido %}
+<div class="welcome-card">
+    <h2><i class="fas fa-horse"></i> Inventario y Salud de Caballos</h2>
+    <table class="tabla-moderna">
+        <thead>
+            <tr><th>Caballo</th><th>Raza</th><th>Disponibilidad</th><th>Estado de Salud</th></tr>
+        </thead>
+        <tbody>
+            {% for c in caballos %}
+            <tr>
+                <td>{{ c.0 }}</td>
+                <td>{{ c.1 }}</td>
+                <td>{{ c.2 }}</td>
+                <td>{{ c.3|default:"Sin registro reciente" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

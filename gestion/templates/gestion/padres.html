@@ -1,0 +1,31 @@
+{% extends 'gestion/base.html' %}
+
+{% block contenido %}
+<div class="welcome-card">
+    <h2><i class="fas fa-user-friends"></i> Directorio de Padres de Familia</h2>
+    <table class="tabla-moderna">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in padres %}
+            <tr>
+                <td>{{ p.0 }}</td>
+                <td>{{ p.1 }}</td>
+                <td>{{ p.2 }}</td>
+                <td>{{ p.3 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No hay padres registrados aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
