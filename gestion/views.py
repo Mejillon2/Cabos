@@ -10,15 +10,12 @@ def index(request):
     cur = conn.cursor()
     
     try:
-        # Usamos comillas dobles si las tablas se crearon con capitalización mixta
         cur.execute('SELECT COUNT(*) FROM "TERAPEUTAS_INFO" WHERE "DISPONIBLE" = 1')
         total_terapeutas = cur.fetchone()[0]
-        
-        # Ajustado a la tabla "Sesiones" (visto en imagen_36.png)
+
         cur.execute('SELECT COUNT(DISTINCT "Id_Paciente") FROM "Sesiones"')
         pacientes_activos = cur.fetchone()[0]
         
-        # Ajustado a Salud_Caballo
         cur.execute("SELECT COUNT(*) FROM \"Salud_Caballo\" WHERE \"Estado_Fisico\" = 'Saludable'")
         caballos_ok = cur.fetchone()[0]
         
@@ -40,15 +37,12 @@ def index(request):
 def login_view(request):
     error = None
     if request.method == 'POST':
-        # Obtenemos los datos del formulario (imagen_34.png)
         usuario_ingresado = request.POST.get('usuario').strip()
         contrasena_ingresada = request.POST.get('contraseña').strip()
 
         conn = get_connection()
         cur = conn.cursor()
-        
-        # Ajustamos la consulta a tu tabla PERSONAS (basado en tu captura de SQL)
-        # Buscamos por NOMBRE y validamos que ES_ADMIN sea 1
+
         query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE FROM PERSONAS WHERE NOMBRE = ? AND ES_ADMIN = 1'
         cur.execute(query, (usuario_ingresado,))
         usuario = cur.fetchone()
@@ -57,7 +51,6 @@ def login_view(request):
         if usuario:
             db_id, db_pass, db_nombre = usuario
             
-            # Comparamos la contraseña (usamos .strip() por si Firebird añade espacios)
             if db_pass.strip() == contrasena_ingresada:
                 request.session['admin_id'] = db_id
                 request.session['admin_nombre'] = db_nombre
@@ -151,19 +144,48 @@ def lista_caballos(request):
     conn = get_connection()
     cur = conn.cursor()
     
+    # --- PROCESAR FORMULARIO PARA AGREGAR CABALLO (POST) ---
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre_c')
+        raza = request.POST.get('raza')
+        disponibilidad = request.POST.get('disponibilidad')
+        
+        try:
+            # Al ser Identity, omitimos por completo ID_CABALLO en el INSERT
+            # Colocamos las columnas en el orden exacto de tu estructura SQL
+            query_insert = """
+                INSERT INTO CABALLOS (NOMBRE_C, RAZA, ESTADO_DISPONIBILIDAD) 
+                VALUES (?, ?, ?)
+            """
+            cur.execute(query_insert, (nombre, raza, disponibilidad))
+            conn.commit()
+            print(f"DEBUG: ¡Caballo '{nombre}' guardado exitosamente!")
+            return redirect('lista_caballos')
+            
+        except Exception as e:
+            print(f"Error crítico al insertar caballo: {e}")
+        finally:
+            conn.close()
+            conn = get_connection()
+            cur = conn.cursor()
+
+    # --- LISTAR CABALLOS EN LA TABLA (GET) ---
     try:
-        # Usamos los nombres exactos que Firebird espera
-        query = "SELECT ID_CABALLO, NOMBRE_C, RAZA, ESTADO_DISPONIBILIDAD FROM CABALLOS"
-        cur.execute(query)
+        # Aseguramos el orden correcto: ID(0), Nombre(1), Raza(2), Disponibilidad(3), Salud(4)
+        query_select = """
+            SELECT c.ID_CABALLO, c.NOMBRE_C, c.RAZA, c.ESTADO_DISPONIBILIDAD, s.ESTADO_FISICO
+            FROM CABALLOS c
+            LEFT JOIN SALUD_CABALLO s ON c.ID_CABALLO = s.ID_CABALLO
+        """
+        cur.execute(query_select)
         datos = cur.fetchall()
         
-        # Limpiamos los espacios en blanco de los VARCHAR
-        caballos = [[str(col).strip() if col is not None else "" for col in fila] for fila in datos]
-        
-        print(f"DEBUG: ¡Ahora se encontraron {len(caballos)} caballos!")
-
+        caballos = []
+        for fila in datos:
+            caballos.append([str(col).strip() if col is not None else "" for col in fila])
+            
     except Exception as e:
-        print(f"Error en consulta: {e}")
+        print(f"Error al listar caballos: {e}")
         caballos = []
     finally:
         conn.close()

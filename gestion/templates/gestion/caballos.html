@@ -1,10 +1,41 @@
 {% extends 'gestion/base.html' %}
 {% block content %}
-<div class="welcome-card">
-    <h2><i class="fas fa-horse"></i> Inventario y Salud de Caballos</h2>
-    <table class="tabla-moderna">
+<div class="welcome-card" style="padding: 20px;">
+    <h2><i class="fas fa-horse"></i> Gestión de Inventario de Caballos</h2>
+    <br>
+
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 5px solid #800020;">
+        <h4 style="margin-top: 0; color: #800020;"><i class="fas fa-plus-circle"></i> Registrar Nuevo Equino</h4>
+        <form method="POST" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+            {% csrf_token %}
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Nombre del Caballo:</label>
+                <input type="text" name="nombre_c" required style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Raza:</label>
+                <input type="text" name="raza" required style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Disponibilidad:</label>
+                <select name="disponibilidad" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
+                    <option value="Disponible">Disponible</option>
+                    <option value="En Mantenimiento">En Mantenimiento</option>
+                    <option value="Descanso">En Descanso</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" style="background: #800020; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <table class="tabla-moderna" style="width: 100%;">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Caballo</th>
                 <th>Raza</th>
                 <th>Disponibilidad</th>
@@ -14,36 +45,27 @@
         <tbody>
             {% for c in caballos %}
             <tr>
-                <td><strong>{{ c.0 }}</strong></td>
-                <td>{{ c.1 }}</td>
-                <td>
-                    {% if c.2 == 'Disponible' %}
-                        <span class="badge-verde">{{ c.2 }}</span>
+                <td>{{ c.0 }}</td> <td><strong>{{ c.1 }}</strong></td> <td>{{ c.2 }}</td> <td>
+                    {% if c.3 == 'Disponible' %}
+                        <span class="badge-verde" style="color: green; font-weight: bold;">{{ c.3 }}</span>
                     {% else %}
-                        <span class="badge-rojo">{{ c.2 }}</span>
+                        <span class="badge-rojo" style="color: red; font-weight: bold;">{{ c.3 }}</span>
                     {% endif %}
                 </td>
                 <td>
-                    {% if c.3 and c.3 != "None" %}
-                        {{ c.3 }}
+                    {% if c.4 and c.4 != "None" %}
+                        {{ c.4 }}
                     {% else %}
-                        <span class="text-muted italic">Sin registro reciente</span>
+                        <span style="color: #6c757d; font-style: italic;">Sin registro clínico</span>
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" style="text-align: center;">No hay caballos registrados en el sistema.</td>
+                <td colspan="5" style="text-align: center; padding: 20px;">No hay caballos registrados en el sistema.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
-<style>
-    .badge-verde { color: #28a745; font-weight: bold; }
-    .badge-rojo { color: #dc3545; font-weight: bold; }
-    .text-muted { color: #6c757d; }
-    .italic { font-style: italic; }
-</style>
 {% endblock %}
