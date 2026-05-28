@@ -5,34 +5,44 @@ from datetime import datetime
 def index(request):
     if 'admin_id' not in request.session:
         return redirect('login_view')
-    
+
     conn = get_connection()
     cur = conn.cursor()
-    
+
+    # Inicializamos los contadores en 0 por seguridad
+    total_terapeutas = 0
+    total_pacientes = 0
+    total_caballos = 0
+
     try:
-        cur.execute('SELECT COUNT(*) FROM "TERAPEUTAS_INFO" WHERE "DISPONIBLE" = 1')
+        # 1. Contar Terapeutas usando la limpieza de rol que ya nos funcionó
+        cur.execute("SELECT COUNT(*) FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'TERAPEUTA'")
         total_terapeutas = cur.fetchone()[0]
 
-        cur.execute('SELECT COUNT(DISTINCT "Id_Paciente") FROM "Sesiones"')
-        pacientes_activos = cur.fetchone()[0]
-        
-        cur.execute("SELECT COUNT(*) FROM \"Salud_Caballo\" WHERE \"Estado_Fisico\" = 'Saludable'")
-        caballos_ok = cur.fetchone()[0]
-        
+        # 2. Contar Pacientes con Sesión programada (o total de pacientes registrados)
+        # Nota: Usamos SESIONES en mayúsculas para evitar el error SQL -204
+        cur.execute("SELECT COUNT(*) FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'PACIENTE'")
+        total_pacientes = cur.fetchone()[0]
+
+        # 3. Contar Caballos que están registrados/saludables
+        # Cambiado a la tabla CABALLOS en mayúsculas
+        cur.execute("SELECT COUNT(*) FROM CABALLOS")
+        total_caballos = cur.fetchone()[0]
+
+        print(f"DEBUG Dashboard: Terapeutas={total_terapeutas}, Pacientes={total_pacientes}, Caballos={total_caballos}")
+
     except Exception as e:
         print(f"Error en las consultas de index: {e}")
-        total_terapeutas = pacientes_activos = caballos_ok = 0
     finally:
         conn.close()
-    
-    context = {
+
+    # Enviamos los datos reales al HTML
+    return render(request, 'gestion/index.html', {
         'total_terapeutas': total_terapeutas,
-        'pacientes_activos': pacientes_activos,
-        'caballos_ok': caballos_ok,
+        'total_pacientes': total_pacientes,
+        'total_caballos': total_caballos,
         'admin_nombre': request.session.get('admin_nombre')
-    }
-    
-    return render(request, 'gestion/index.html', context)
+    })
 
 def login_view(request):
     error = None
@@ -151,8 +161,6 @@ def lista_caballos(request):
         disponibilidad = request.POST.get('disponibilidad')
         
         try:
-            # Al ser Identity, omitimos por completo ID_CABALLO en el INSERT
-            # Colocamos las columnas en el orden exacto de tu estructura SQL
             query_insert = """
                 INSERT INTO CABALLOS (NOMBRE_C, RAZA, ESTADO_DISPONIBILIDAD) 
                 VALUES (?, ?, ?)
@@ -169,9 +177,7 @@ def lista_caballos(request):
             conn = get_connection()
             cur = conn.cursor()
 
-    # --- LISTAR CABALLOS EN LA TABLA (GET) ---
     try:
-        # Aseguramos el orden correcto: ID(0), Nombre(1), Raza(2), Disponibilidad(3), Salud(4)
         query_select = """
             SELECT c.ID_CABALLO, c.NOMBRE_C, c.RAZA, c.ESTADO_DISPONIBILIDAD, s.ESTADO_FISICO
             FROM CABALLOS c
@@ -205,13 +211,11 @@ def lista_padres(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         
-        # Insertamos en PERSONAS con el rol correspondiente
         cur.execute("INSERT INTO PERSONAS (NOMBRE, ROL) VALUES (?, 'Padre') RETURNING ID_PERSONA", (nombre,))
         conn.commit()
         conn.close()
         return redirect('lista_padres') 
-
-    # Consultamos solo a los que tienen rol de Padre
+    
     cur.execute("SELECT ID_PERSONA, NOMBRE FROM PERSONAS WHERE ROL = 'Padre'")
     padres = cur.fetchall()
     conn.close()
@@ -219,14 +223,12 @@ def lista_padres(request):
     return render(request, 'gestion/padres.html', {'padres': padres})
 
 def agendar_cita(request):
-    # Verificación de sesión según tu flujo actual
     if 'admin_id' not in request.session:
         return redirect('login_view')
 
     conn = get_connection()
     cur = conn.cursor()
 
-    # --- LÓGICA PARA GUARDAR LA CITA (POST) ---
     if request.method == 'POST':
         id_paciente = request.POST.get('paciente')
         id_terapeuta = request.POST.get('terapeuta')
@@ -234,7 +236,6 @@ def agendar_cita(request):
         fecha = request.POST.get('fecha')
         hora = request.POST.get('hora')
         
-        # Combinar fecha y hora para el campo TIMESTAMP de Firebird
         fecha_hora = f"{fecha} {hora}"
 
         try:
