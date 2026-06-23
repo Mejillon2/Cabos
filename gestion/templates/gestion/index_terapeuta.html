@@ -1,0 +1,41 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+<div class="main-header" style="margin-bottom: 25px;">
+    <h1>Panel del Terapeuta</h1>
+    <h2>Bienvenido(a), {{ nombre_usuario }}</h2>
+</div>
+
+<div class="welcome-card" style="padding: 25px;">
+    <div class="card-title">
+        <i class="fa-solid fa-calendar-days" style="color: var(--guinda-principal);"></i> Mis Sesiones Agendadas
+    </div>
+    
+    <div style="overflow-x: auto; margin-top: 15px;">
+        <table class="data-table-elegante">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Caballo Asignado</th>
+                    <th>Fecha y Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sesiones %}
+                <tr>
+                    <td style="font-weight: 600; color: var(--texto-oscuro);">{{ s.0 }}</td>
+                    <td><i class="fa-solid fa-horse"></i> {{ s.1 }}</td>
+                    <td style="color: var(--guinda-principal); font-weight: bold;">{{ s.2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #888; padding: 20px;">
+                        No tienes sesiones programadas actualmente.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

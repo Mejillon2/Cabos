@@ -1,0 +1,40 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+<div class="main-header" style="margin-bottom: 25px;">
+    <h1>Centro de Notificaciones</h1>
+    <h2>Bienvenido(a), {{ nombre_usuario }}</h2>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+    {% for n in notificaciones %}
+        <div class="welcome-card" style="border-left: 6px solid var(--dorado-cuadra); padding: 20px;">
+            <div class="card-title" style="font-size: 1.2rem; color: var(--guinda-principal);">
+                <i class="fa-solid fa-bell"></i> ¡Nueva Sesión Asignada!
+            </div>
+            <p style="margin: 5px 0; color: var(--texto-oscuro); font-size: 1.05rem;">
+                Se ha programado una sesión de equinoterapia con los siguientes detalles:
+            </p>
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #faf8f5; padding: 15px; border-radius: 8px;">
+                <div>
+                    <span style="font-size: 0.8rem; color: #888; font-weight: bold; text-transform: uppercase;">Terapeuta Especialista</span>
+                    <strong style="display: block; color: var(--texto-oscuro);"><i class="fa-solid fa-user-doctor"></i> {{ n.0 }}</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: #888; font-weight: bold; text-transform: uppercase;">Caballo Asignado</span>
+                    <strong style="display: block; color: var(--texto-oscuro);"><i class="fa-solid fa-horse"></i> {{ n.1 }}</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: #888; font-weight: bold; text-transform: uppercase;">Fecha y Hora</span>
+                    <strong style="display: block; color: var(--guinda-principal);"><i class="fa-solid fa-clock"></i> {{ n.2 }}</strong>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="welcome-card" style="text-align: center; padding: 40px; color: #888;">
+            <i class="fa-solid fa-bell-slash" style="font-size: 3rem; margin-bottom: 15px; color: #ccc;"></i>
+            <p style="margin: 0; font-size: 1.1rem;">No tienes notificaciones ni próximas sesiones programadas.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

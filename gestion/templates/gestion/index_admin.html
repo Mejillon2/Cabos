@@ -1,0 +1,47 @@
+{% extends 'gestion/base.html' %}
+{% block content %}
+<div class="reportes-container">
+    <div class="reportes-header">
+        <span class="header-icon">👑</span>
+        <div class="header-text">
+            <h2>Bienvenido, {{ request.session.usuario }}</h2>
+            <p>Panel de Control del Administrador — Cuadra Erre</p>
+        </div>
+    </div>
+
+    <div class="reportes-card" style="margin-top: 20px;">
+        <div class="card-title-bar">📈 Estado General del Sistema</div>
+        <div style="padding: 24px; background: #fff;">
+            <p style="color: #666; margin-bottom: 25px;">Resumen en tiempo real de los recursos de la clínica. Selecciona una opción del menú lateral para gestionar los registros.</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                
+                <div style="border: 1px solid #edf2f7; border-left: 5px solid #7a1c2e; padding: 20px; border-radius: 8px; background: #fafafa; display: flex; align-items: center; gap: 15px;">
+                    <span style="font-size: 2rem;">👨‍⚕️</span>
+                    <div>
+                        <h4 style="margin: 0; color: #555; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Terapeutas</h4>
+                        <p style="margin: 5px 0 0 0; font-size: 1.6rem; font-weight: bold; color: #1e1e1e;">{{ total_terapeutas|default:"3" }}</p>
+                    </div>
+                </div>
+
+                <div style="border: 1px solid #edf2f7; border-left: 5px solid #7a1c2e; padding: 20px; border-radius: 8px; background: #fafafa; display: flex; align-items: center; gap: 15px;">
+                    <span style="font-size: 2rem;">👥</span>
+                    <div>
+                        <h4 style="margin: 0; color: #555; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Pacientes</h4>
+                        <p style="margin: 5px 0 0 0; font-size: 1.6rem; font-weight: bold; color: #1e1e1e;">{{ total_pacientes|default:"3" }}</p>
+                    </div>
+                </div>
+
+                <div style="border: 1px solid #edf2f7; border-left: 5px solid #7a1c2e; padding: 20px; border-radius: 8px; background: #fafafa; display: flex; align-items: center; gap: 15px;">
+                    <span style="font-size: 2rem;">🐴</span>
+                    <div>
+                        <h4 style="margin: 0; color: #555; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Caballos</h4>
+                        <p style="margin: 5px 0 0 0; font-size: 1.6rem; font-weight: bold; color: #1e1e1e;">{{ total_caballos|default:"3" }}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

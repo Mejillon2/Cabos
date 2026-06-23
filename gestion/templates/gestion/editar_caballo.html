@@ -1,0 +1,45 @@
+{% extends 'gestion/base.html' %}
+{% block content %}
+<div class="reportes-container" style="max-width: 600px; margin: 0 auto;">
+    <div class="reportes-header">
+        <span class="header-icon">✏️</span>
+        <div class="header-text">
+            <h2>Modificar Datos del Equino</h2>
+            <p>ID de Registro: {{ caballo.0 }}</p>
+        </div>
+    </div>
+
+    <div class="reportes-card">
+        <div class="card-title-bar">Editar Información de {{ caballo.1 }}</div>
+        <div class="card-body-form">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Nombre del Caballo:</label>
+                    <input type="text" name="nombre_c" value="{{ caballo.1 }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Raza:</label>
+                    <input type="text" name="raza" value="{{ caballo.2 }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Edad (Años):</label>
+                    <input type="number" name="edad" value="{% if caballo.3 != 'None' %}{{ caballo.3 }}{% endif %}">
+                </div>
+                <div class="form-group">
+                    <label>Estado de Disponibilidad:</label>
+                    <select name="estado_disponibilidad" style="width:100%; padding:10px; border-radius:5px; border:1px solid #ccc;">
+                        <option value="Disponible" {% if caballo.4 == 'Disponible' %}selected{% endif %}>Disponible</option>
+                        <option value="En Mantenimiento" {% if caballo.4 == 'En Mantenimiento' %}selected{% endif %}>En Mantenimiento</option>
+                        <option value="No Disponible" {% if caballo.4 == 'No Disponible' %}selected{% endif %}>No Disponible</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="submit" class="btn-submit-reporte" style="margin:0; flex:1;">💾 Actualizar</button>
+                    <a href="{% url 'lista_caballos' %}" style="display:block; text-align:center; background:#6c757d; color:white; text-decoration:none; padding:12px; font-weight:bold; border-radius:5px; flex:1;">❌ Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

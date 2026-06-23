@@ -1,45 +1,57 @@
 {% extends 'gestion/base.html' %}
 
 {% block content %}
-<header class="main-header">
-    <h1>Gestión de Terapeutas</h1>
-</header>
+<!-- ENCABEZADO DE LA SECCIÓN -->
+<div class="main-header" style="margin-bottom: 25px;">
+    <h1><i class="fa-solid fa-user-doctor"></i> Gestión de Terapeutas</h1>
+</div>
 
-<div class="card-container">
-    <div class="card-title"><i class="fa-solid fa-user-plus"></i> Registrar Nuevo Terapeuta</div>
+<!-- FORMULARIO DE REGISTRO (REUTILIZA TUS CARDS) -->
+<div class="welcome-card" style="padding: 25px; margin-bottom: 25px;">
+    <div class="card-title" style="margin-bottom: 20px;">
+        <i class="fa-solid fa-user-plus" style="color: var(--guinda-principal);"></i> Registrar Nuevo Terapeuta
+    </div>
     <form method="POST" class="form-horizontal">
         {% csrf_token %}
         <input type="text" name="nombre" placeholder="Nombre Completo" required>
         <input type="text" name="especialidad" placeholder="Especialidad (ej. Psicología)" required>
-        <button type="submit" class="btn-login" style="width: auto; padding: 10px 20px;">Registrar</button>
+        <button type="submit" class="btn-submit-terapeuta">
+            <i class="fa-solid fa-plus"></i> Registrar
+        </button>
     </form>
 </div>
 
-<div class="card-container" style="margin-top: 20px;">
-    <div class="card-title"><i class="fa-solid fa-list"></i> Terapeutas en el Sistema</div>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Especialidad</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for t in terapeutas %}
-            <tr>
-                <td>{{ t.1 }}</td>
-                <td>{{ t.2 }}</td>
-                <td>
-                    {% if t.3 == 1 %}
-                        <span class="status-pill available">Disponible</span>
-                    {% else %}
-                        <span class="status-pill unavailable">No Disponible</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- TABLA DE REGISTROS (REUTILIZA TUS CARDS) -->
+<div class="welcome-card" style="padding: 25px;">
+    <div class="card-title" style="margin-bottom: 20px;">
+        <i class="fa-solid fa-list" style="color: var(--guinda-principal);"></i> Terapeutas en el Sistema
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table class="data-table-elegante">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Especialidad</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in terapeutas %}
+                <tr>
+                    <td style="font-weight: 600; color: var(--texto-oscuro);">{{ t.1 }}</td>
+                    <td style="color: #666;">{{ t.2 }}</td>
+                    <td>
+                        {% if t.3 == 1 %}
+                            <span class="status-pill available">Disponible</span>
+                        {% else %}
+                            <span class="status-pill unavailable">No Disponible</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

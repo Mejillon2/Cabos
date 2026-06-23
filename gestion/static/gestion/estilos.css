@@ -197,3 +197,228 @@ body {
     display: block;
     font-size: 1.5rem;
 }
+/* --- BOTÓN DE REGISTRO FORMATEADO --- */
+.btn-submit-terapeuta {
+    background-color: var(--guinda-principal);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 25px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-submit-terapeuta:hover {
+    background-color: var(--guinda-oscuro);
+}
+
+/* --- TABLA ELEGANTE COMPATIBLE --- */
+.data-table-elegante {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.95rem;
+}
+
+.data-table-elegante th {
+    background-color: #fcf9f2; /* Tono beige sutil basado en tu paleta */
+    color: var(--texto-oscuro);
+    font-weight: bold;
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 2px solid #e0dcd5;
+}
+
+.data-table-elegante td {
+    padding: 14px 15px;
+    border-bottom: 1px solid #eeeeee;
+    vertical-align: middle;
+}
+
+.data-table-elegante tbody tr:hover {
+    background-color: #faf6ee; /* Efecto hover elegante al pasar el cursor */
+}
+
+/* ==========================================================================
+   ESTILOS GENERALES PARA EL MÓDULO DE REPORTES (CSS PURO)
+   ========================================================================== */
+
+.reportes-container {
+    padding: 20px;
+    background-color: #fcfcfc;
+    min-height: 100vh;
+    font-family: sans-serif;
+}
+
+/* Encabezado */
+.reportes-header {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid #7a1c2e; /* Color guinda coordinado */
+    margin-bottom: 25px;
+}
+.header-icon {
+    font-size: 2rem;
+    margin-right: 15px;
+}
+.header-text h2 {
+    margin: 0 0 5px 0;
+    color: #2b2b2b;
+    font-size: 1.6rem;
+}
+.header-text p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Distribución en dos columnas */
+.reportes-wrapper {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* Soporte responsivo si la pantalla es chica */
+}
+.reportes-col-filtro {
+    flex: 1 1 300px; /* Ancho mínimo de 300px para el formulario */
+}
+.reportes-col-tabla {
+    flex: 2 1 500px; /* La tabla toma el doble de espacio */
+}
+
+/* Estructura de Tarjetas (Cards) */
+.reportes-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+.card-title-bar {
+    background: #2b2b2b;
+    color: #ffffff;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+.table-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Formularios */
+.card-body-form {
+    padding: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #555;
+}
+.form-group input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+.btn-submit-reporte {
+    width: 100%;
+    background-color: #7a1c2e; /* Guinda */
+    color: white;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+.btn-submit-reporte:hover {
+    background-color: #5a1220;
+}
+
+/* Tablas */
+.card-body-table {
+    padding: 0;
+}
+.table-responsive-scroll {
+    overflow-x: auto;
+}
+.tabla-reporte-custom {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+.tabla-reporte-custom th {
+    background-color: #f8f9fa;
+    color: #555;
+    padding: 14px 18px;
+    font-weight: bold;
+    border-bottom: 2px solid #eee;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+.tabla-reporte-custom td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+.tabla-reporte-custom tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Detalles de las celdas */
+.txt-bold { font-weight: bold; color: #111; }
+.txt-secondary { color: #555; }
+.txt-muted { color: #777; font-size: 0.85rem; }
+
+.caballo-tag {
+    background: #f1f3f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    font-size: 0.85rem;
+}
+.sesiones-badge {
+    background: #7a1c2e;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+.status-badge-green {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+/* Vista Vacía */
+.empty-state-container {
+    padding: 40px;
+    text-align: center;
+    color: #777;
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.empty-state-container h3 { margin: 0 0 5px 0; color: #444; }

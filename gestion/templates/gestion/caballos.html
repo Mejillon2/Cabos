@@ -1,71 +1,90 @@
 {% extends 'gestion/base.html' %}
 {% block content %}
-<div class="welcome-card" style="padding: 20px;">
-    <h2><i class="fas fa-horse"></i> Gestión de Inventario de Caballos</h2>
-    <br>
-
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 5px solid #800020;">
-        <h4 style="margin-top: 0; color: #800020;"><i class="fas fa-plus-circle"></i> Registrar Nuevo Equino</h4>
-        <form method="POST" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-            {% csrf_token %}
-            <div style="flex: 1; min-width: 200px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">Nombre del Caballo:</label>
-                <input type="text" name="nombre_c" required style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
-            </div>
-            <div style="flex: 1; min-width: 200px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">Raza:</label>
-                <input type="text" name="raza" required style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
-            </div>
-            <div style="flex: 1; min-width: 200px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">Disponibilidad:</label>
-                <select name="disponibilidad" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
-                    <option value="Disponible">Disponible</option>
-                    <option value="En Mantenimiento">En Mantenimiento</option>
-                    <option value="Descanso">En Descanso</option>
-                </select>
-            </div>
-            <div>
-                <button type="submit" style="background: #800020; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                    <i class="fas fa-save"></i> Guardar
-                </button>
-            </div>
-        </form>
+<div class="reportes-container">
+    
+    <div class="reportes-header">
+        <span class="header-icon">🐴</span>
+        <div class="header-text">
+            <h2>Gestión de Caballos de Apoyo</h2>
+            <p>Registra, edita o da de baja los equinos destinados a las sesiones de equinoterapia.</p>
+        </div>
     </div>
 
-    <table class="tabla-moderna" style="width: 100%;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Caballo</th>
-                <th>Raza</th>
-                <th>Disponibilidad</th>
-                <th>Estado de Salud</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in caballos %}
-            <tr>
-                <td>{{ c.0 }}</td> <td><strong>{{ c.1 }}</strong></td> <td>{{ c.2 }}</td> <td>
-                    {% if c.3 == 'Disponible' %}
-                        <span class="badge-verde" style="color: green; font-weight: bold;">{{ c.3 }}</span>
-                    {% else %}
-                        <span class="badge-rojo" style="color: red; font-weight: bold;">{{ c.3 }}</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if c.4 and c.4 != "None" %}
-                        {{ c.4 }}
-                    {% else %}
-                        <span style="color: #6c757d; font-style: italic;">Sin registro clínico</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 20px;">No hay caballos registrados en el sistema.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="reportes-wrapper">
+        <div class="reportes-col-filtro">
+            <div class="reportes-card">
+                <div class="card-title-bar">➕ Registrar Nuevo Caballo</div>
+                <div class="card-body-form">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Nombre del Caballo:</label>
+                            <input type="text" name="nombre_c" required placeholder="Ej. Centella">
+                        </div>
+                        <div class="form-group">
+                            <label>Raza:</label>
+                            <input type="text" name="raza" required placeholder="Ej. Cuarto de Milla">
+                        </div>
+                        <div class="form-group">
+                            <label>Edad (Años):</label>
+                            <input type="number" name="edad" placeholder="Opcional">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado de Disponibilidad:</label>
+                            <select name="estado_disponibilidad" style="width:100%; padding:10px; border-radius:5px; border:1px solid #ccc;">
+                                <option value="Disponible">Disponible</option>
+                                <option value="En Mantenimiento">En Mantenimiento</option>
+                                <option value="No Disponible">No Disponible</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit-reporte">💾 Guardar Caballo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="reportes-col-tabla">
+            <div class="reportes-card">
+                <div class="card-title-bar">📋 Inventario Activo</div>
+                <div class="card-body-table">
+                    <table class="tabla-reporte-custom">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Raza</th>
+                                <th>Edad</th>
+                                <th>Estado</th>
+                                <th style="text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in caballos %}
+                            <tr>
+                                <td>{{ c.0 }}</td>
+                                <td class="txt-bold">{{ c.1 }}</td>
+                                <td>{{ c.2 }}</td>
+                                <td>{% if c.3 != 'None' %}{{ c.3 }} años{% else %}N/A{% endif %}</td>
+                                <td>
+                                    <span class="status-badge-green" style="background-color: {% if c.4 == 'Disponible' %}rgba(40,167,69,0.1){% else %}rgba(220,53,69,0.1){% endif %}; color: {% if c.4 == 'Disponible' %}#28a745{% else %}#dc3545{% endif %}; border: 1px solid {% if c.4 == 'Disponible' %}rgba(40,167,69,0.2){% else %}rgba(220,53,69,0.2){% endif %};">
+                                        {{ c.4 }}
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{% url 'editar_caballo' c.0 %}" style="text-decoration:none; color:#007bff; margin-right:10px; font-weight:bold;">✏️ Editar</a>
+                                    <a href="{% url 'eliminar_caballo' c.0 %}" onclick="return confirm('¿Seguro que deseas eliminar a {{ c.1 }}?');" style="text-decoration:none; color:#dc3545; font-weight:bold;">🗑️ Borrar</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align:center; padding:20px; color:#777;">No hay caballos registrados en el sistema.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

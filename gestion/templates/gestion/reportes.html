@@ -1,0 +1,71 @@
+{% extends 'gestion/base.html' %}
+{% block content %}
+<div class="reportes-container">
+    
+    <div class="reportes-header">
+        <span class="header-icon">📊</span>
+        <div class="header-text">
+            <h2>Reportes y Estadísticas del Sistema</h2>
+            <p>Genera reportes detallados sobre las sesiones, terapeutas y el estado clínico.</p>
+        </div>
+    </div>
+
+    <div class="reportes-card" style="margin-bottom: 25px;">
+        <div class="card-title-bar">📅 Filtrar por Rango de Fechas</div>
+        <div style="padding: 20px; background: #fafafa;">
+            <form method="GET" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.85rem; color:#555;">Fecha Inicio:</label>
+                    <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.85rem; color:#555;">Fecha Fin:</label>
+                    <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">
+                </div>
+                <div style="min-width: 180px;">
+                    <button type="submit" class="btn-submit-reporte" style="padding: 11px 20px; margin: 0;">🔍 Generar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="reportes-card">
+        <div class="card-title-bar">📋 Resultados del Reporte</div>
+        <div style="padding: 15px 20px; background: #fff; border-bottom: 1px solid #edf2f7;">
+            <small style="color: #666; font-weight: 600;">📈 {{ sesiones|length }} Sesiones encontradas</small>
+        </div>
+        <div class="card-body-table">
+            <table class="tabla-reporte-custom">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Terapeuta</th>
+                        <th>Caballo</th>
+                        <th>Fecha y Hora</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in sesiones %}
+                    <tr>
+                        <td class="txt-bold">{{ s.0 }}</td>
+                        <td>{{ s.1 }}</td>
+                        <td>🐴 {{ s.2 }}</td>
+                        <td style="color:#555;">{{ s.3 }}</td>
+                        <td>
+                            <span class="status-badge-green" style="background-color: rgba(40,167,69,0.1); color: #28a745; border: 1px solid rgba(40,167,69,0.2);">
+                                {{ s.4 }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:30px; color:#777;">No se encontraron registros en el rango de fechas seleccionado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

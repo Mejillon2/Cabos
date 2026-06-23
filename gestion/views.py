@@ -1,48 +1,95 @@
+import re
 from django.shortcuts import render, redirect
 from .db_utils import get_connection
 from datetime import datetime
 
 def index(request):
-    if 'admin_id' not in request.session:
+    # Verificación global de sesión usando la clave unificada
+    if 'usuario_id' not in request.session: 
         return redirect('login_view')
+    
+    rol = request.session.get('rol', '').upper().strip()
+    usuario_id = request.session.get('usuario_id')
+    nombre_usuario = request.session.get('usuario_nombre', 'Usuario')
 
     conn = get_connection()
     cur = conn.cursor()
 
-    # Inicializamos los contadores en 0 por seguridad
-    total_terapeutas = 0
-    total_pacientes = 0
-    total_caballos = 0
-
     try:
-        # 1. Contar Terapeutas usando la limpieza de rol que ya nos funcionó
-        cur.execute("SELECT COUNT(*) FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'TERAPEUTA'")
-        total_terapeutas = cur.fetchone()[0]
+        # ==========================================
+        # VISTA 1: ADMINISTRADOR (Ve todo el sistema)
+        # ==========================================
+        if rol in ['ADMINISTRADOR', 'ADMIN']:
+            # 1. Contar total de terapeutas registrados
+            cur.execute("SELECT COUNT(*) FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'TERAPEUTA'")
+            total_terapeutas = cur.fetchone()[0]
 
-        # 2. Contar Pacientes con Sesión programada (o total de pacientes registrados)
-        # Nota: Usamos SESIONES en mayúsculas para evitar el error SQL -204
-        cur.execute("SELECT COUNT(*) FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'PACIENTE'")
-        total_pacientes = cur.fetchone()[0]
+            # 2. Contar pacientes únicos que tienen alguna sesión programada
+            cur.execute("SELECT COUNT(DISTINCT ID_PACIENTE) FROM SESIONES WHERE UPPER(TRIM(ESTADO_SESION)) = 'PROGRAMADA'")
+            pacientes_con_sesion = cur.fetchone()[0]
 
-        # 3. Contar Caballos que están registrados/saludables
-        # Cambiado a la tabla CABALLOS en mayúsculas
-        cur.execute("SELECT COUNT(*) FROM CABALLOS")
-        total_caballos = cur.fetchone()[0]
+            # 3. Contar caballos disponibles directamente desde tu tabla CABALLOS
+            cur.execute("SELECT COUNT(*) FROM CABALLOS WHERE UPPER(TRIM(ESTADO_DISPONIBILIDAD)) = 'DISPONIBLE'")
+            caballos_saludables = cur.fetchone()[0]
+            conn.close()
+            
+            # Mandamos las variables limpias al HTML
+            return render(request, 'gestion/index_admin.html', {
+                'admin_nombre': nombre_usuario,
+                'total_terapeutas': total_terapeutas,
+                'pacientes_con_sesion': pacientes_con_sesion,
+                'caballos_saludables': caballos_saludables
+            })
 
-        print(f"DEBUG Dashboard: Terapeutas={total_terapeutas}, Pacientes={total_pacientes}, Caballos={total_caballos}")
+        # ==========================================
+        # VISTA 2: TERAPEUTA (Solo ve sus sesiones)
+        # ==========================================
+        elif rol == 'TERAPEUTA':
+            query_terapeuta = """
+                SELECT P.NOMBRE AS PACIENTE, C.NOMBRE_C AS CABALLO, S.FECHA_HORA 
+                FROM SESIONES S
+                JOIN PERSONAS P ON S.ID_PACIENTE = P.ID_PERSONA
+                JOIN CABALLOS C ON S.ID_CABALLO = C.ID_CABALLO
+                WHERE S.ID_TERAPEUTA = ? AND S.ESTADO_SESION = 'Programada'
+                ORDER BY S.FECHA_HORA ASC
+            """
+            cur.execute(query_terapeuta, (usuario_id,))
+            sesiones = cur.fetchall()
+            conn.close()
+            
+            return render(request, 'gestion/index_terapeuta.html', {
+                'nombre_usuario': nombre_usuario,
+                'sesiones': sesiones
+            })
+
+        # ==========================================
+        # VISTA 3: PADRE (Ventana de Notificaciones)
+        # ==========================================
+        elif rol == 'PADRE':
+            # Nota: Buscamos las sesiones donde el ID_PACIENTE coincide con el ID de la persona (hijo o cuenta vinculada)
+            query_padre = """
+                SELECT T.NOMBRE AS TERAPEUTA, C.NOMBRE_C AS CABALLO, S.FECHA_HORA 
+                FROM SESIONES S
+                JOIN PERSONAS T ON S.ID_TERAPEUTA = T.ID_PERSONA
+                JOIN CABALLOS C ON S.ID_CABALLO = C.ID_CABALLO
+                WHERE S.ID_PACIENTE = ? AND S.ESTADO_SESION = 'Programada'
+                ORDER BY S.FECHA_HORA DESC
+            """
+            cur.execute(query_padre, (usuario_id,))
+            notificaciones = cur.fetchall()
+            conn.close()
+            
+            return render(request, 'gestion/index_padre.html', {
+                'nombre_usuario': nombre_usuario,
+                'notificaciones': notificaciones
+            })
 
     except Exception as e:
-        print(f"Error en las consultas de index: {e}")
-    finally:
-        conn.close()
+        print(f"Error al cargar la vista por roles: {e}")
+        if conn: conn.close()
+        
+    return redirect('login_view')
 
-    # Enviamos los datos reales al HTML
-    return render(request, 'gestion/index.html', {
-        'total_terapeutas': total_terapeutas,
-        'total_pacientes': total_pacientes,
-        'total_caballos': total_caballos,
-        'admin_nombre': request.session.get('admin_nombre')
-    })
 
 def login_view(request):
     error = None
@@ -50,34 +97,74 @@ def login_view(request):
         usuario_ingresado = request.POST.get('usuario').strip()
         contrasena_ingresada = request.POST.get('contraseña').strip()
 
-        conn = get_connection()
-        cur = conn.cursor()
+        # 1. Definición de las Expresiones Regulares según tus formatos estrictos
+        regex_usuario = r'^(AD|TE|PA)_\d{2}#$'
+        regex_password = r'^\d{2}_#(AD|TE|PA)#$'
 
-        query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE FROM PERSONAS WHERE NOMBRE = ? AND ES_ADMIN = 1'
-        cur.execute(query, (usuario_ingresado,))
-        usuario = cur.fetchone()
-        conn.close()
-
-        if usuario:
-            db_id, db_pass, db_nombre = usuario
-            
-            if db_pass.strip() == contrasena_ingresada:
-                request.session['admin_id'] = db_id
-                request.session['admin_nombre'] = db_nombre
-                return redirect('index')
-            else:
-                error = "Contraseña incorrecta."
+        # 2. Validar formatos antes de hacer consultas SQL
+        if not re.match(regex_usuario, usuario_ingresado):
+            error = "El formato del usuario es inválido (Ej: AD_01#)."
+        elif not re.match(regex_password, contrasena_ingresada):
+            error = "El formato de la contraseña es inválido (Ej: 01_#AD#)."
         else:
-            error = "Usuario no encontrado o no tiene permisos de administrador."
+            # 3. Extraer el prefijo (AD, TE o PA) para guiar la lógica
+            prefijo_rol = usuario_ingresado.split('_')[0]
+
+            conn = get_connection()
+            cur = conn.cursor()
+
+            # 4. Ajustar la consulta según el tipo de rol y la estructura de tu BD
+            if prefijo_rol == 'AD':
+                # El administrador se valida con la columna ES_ADMIN = 1
+                query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE, ROL, ES_ADMIN FROM PERSONAS WHERE USUARIO = ? AND ES_ADMIN = 1'
+                cur.execute(query, (usuario_ingresado,))
+            else:
+                # Terapeutas o Padres se validan con su respectivo ROL del CHECK
+                mapa_roles = {'TE': 'Terapeuta', 'PA': 'Padre'}
+                rol_esperado = mapa_roles.get(prefijo_rol)
+                
+                query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE, ROL, ES_ADMIN FROM PERSONAS WHERE USUARIO = ? AND UPPER(TRIM(ROL)) = UPPER(?)'
+                cur.execute(query, (usuario_ingresado, rol_esperado))
+
+            usuario = cur.fetchone()
+            conn.close()
+
+            # 5. Procesar el resultado físico obtenido de Firebird
+            if usuario:
+                db_id, db_pass, db_nombre, db_rol, db_es_admin = usuario
+                db_pass_clean = str(db_pass).strip() if db_pass is not None else ""
+                
+                # Asignamos la etiqueta que tu función 'index' está esperando
+                if db_es_admin == 1:
+                    rol_sesion = 'ADMINISTRADOR'
+                else:
+                    rol_sesion = str(db_rol).strip().upper()
+
+                # 6. Validar contraseña
+                if db_pass_clean == contrasena_ingresada:
+                    # Guardamos los parámetros unificados en las variables de sesión de Django
+                    request.session['usuario_id'] = db_id
+                    request.session['usuario_nombre'] = db_nombre
+                    request.session['rol'] = rol_sesion
+                    
+                    # Redirección directa al enrutador de pantallas
+                    return redirect('index')
+                else:
+                    error = "Contraseña incorrecta."
+            else:
+                error = "El usuario no se encuentra registrado o el rol no coincide."
             
     return render(request, 'gestion/login.html', {'error': error})
+
 
 def logout_view(request):
     request.session.flush()
     return redirect('login_view')
 
 def lista_pacientes(request):
-    if 'admin_id' not in request.session: return redirect('login_view')
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
+        return redirect('login_view')
+        
     conn = get_connection()
     cur = conn.cursor()
 
@@ -87,11 +174,9 @@ def lista_pacientes(request):
         fecha_nac = request.POST.get('fecha_nac')
         diagnostico = request.POST.get('diagnostico')
         
-        # 1. Insertar en PERSONAS
         cur.execute("INSERT INTO PERSONAS (NOMBRE, ROL) VALUES (?, 'Paciente') RETURNING ID_PERSONA", (nombre_paciente,))
         nuevo_id = cur.fetchone()[0]
         
-        # 2. Insertar en PACIENTES_INFO (Usando los nombres de tu tabla en la imagen 4)
         cur.execute("""
             INSERT INTO PACIENTES_INFO (Id_Paciente, Id_Padre, Fecha_Nac, Diagnostico) 
             VALUES (?, ?, ?, ?)
@@ -101,11 +186,9 @@ def lista_pacientes(request):
         conn.close()
         return redirect('lista_pacientes')
 
-    # Obtenemos la lista de padres para el selector del formulario
     cur.execute("SELECT ID_PERSONA, NOMBRE FROM PERSONAS WHERE ROL = 'Padre'")
     padres = cur.fetchall()
 
-    # Obtenemos la lista de pacientes ya registrados para la tabla
     cur.execute("""
         SELECT p.NOMBRE, padre.NOMBRE, pi.Diagnostico 
         FROM PERSONAS p
@@ -117,8 +200,11 @@ def lista_pacientes(request):
     
     return render(request, 'gestion/pacientes.html', {'pacientes': pacientes, 'padres': padres})
 
+
 def lista_terapeutas(request):
-    if 'admin_id' not in request.session: return redirect('login_view')
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
+        return redirect('login_view')
+        
     conn = get_connection()
     cur = conn.cursor()
 
@@ -126,17 +212,13 @@ def lista_terapeutas(request):
         nombre = request.POST.get('nombre')
         especialidad = request.POST.get('especialidad')
         
-        # Insertar datos
         cur.execute("INSERT INTO PERSONAS (NOMBRE, ROL) VALUES (?, 'Terapeuta') RETURNING ID_PERSONA", (nombre,))
         nuevo_id = cur.fetchone()[0]
         cur.execute("INSERT INTO TERAPEUTAS_INFO (ID_TERAPEUTA, ESPECIALIDAD, DISPONIBLE) VALUES (?, ?, 1)", (nuevo_id, especialidad))
         conn.commit()
-        conn.close() # Cerramos antes de irnos
-        
-        # ¡ESTA ES LA CLAVE! Redireccionamos a la misma vista para "limpiar" el formulario
+        conn.close()
         return redirect('lista_terapeutas') 
 
-    # Si es GET (o después del redirect), cargamos la lista normal
     query = """
         SELECT p.ID_PERSONA, p.NOMBRE, t.ESPECIALIDAD, t.DISPONIBLE 
         FROM PERSONAS p
@@ -147,62 +229,102 @@ def lista_terapeutas(request):
     conn.close()
     return render(request, 'gestion/terapeutas.html', {'terapeutas': terapeutas})
 
+
 def lista_caballos(request):
-    if 'admin_id' not in request.session: 
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
         return redirect('login_view')
-    
+        
     conn = get_connection()
     cur = conn.cursor()
-    
-    # --- PROCESAR FORMULARIO PARA AGREGAR CABALLO (POST) ---
+
+    # Si el formulario envía datos por POST, es una inserción (CREATE)
     if request.method == 'POST':
         nombre = request.POST.get('nombre_c')
         raza = request.POST.get('raza')
-        disponibilidad = request.POST.get('disponibilidad')
-        
+        edad = request.POST.get('edad')
+        disponibilidad = request.POST.get('estado_disponibilidad')
+
+        # Manejo de nulos para la edad si viene vacía
+        edad_val = int(edad) if edad else None
+
         try:
-            query_insert = """
-                INSERT INTO CABALLOS (NOMBRE_C, RAZA, ESTADO_DISPONIBILIDAD) 
-                VALUES (?, ?, ?)
-            """
-            cur.execute(query_insert, (nombre, raza, disponibilidad))
+            cur.execute("""
+                INSERT INTO CABALLOS (NOMBRE_C, RAZA, EDAD, ESTADO_DISPONIBILIDAD) 
+                VALUES (?, ?, ?, ?)
+            """, (nombre, raza, edad_val, disponibilidad))
             conn.commit()
-            print(f"DEBUG: ¡Caballo '{nombre}' guardado exitosamente!")
-            return redirect('lista_caballos')
-            
         except Exception as e:
-            print(f"Error crítico al insertar caballo: {e}")
+            print(f"Error al insertar caballo: {e}")
         finally:
             conn.close()
-            conn = get_connection()
-            cur = conn.cursor()
+        return redirect('lista_caballos')
 
+    # Si es GET, simplemente listamos los caballos existentes (READ)
+    cur.execute("SELECT ID_CABALLO, NOMBRE_C, RAZA, EDAD, ESTADO_DISPONIBILIDAD FROM CABALLOS ORDER BY ID_CABALLO DESC")
+    caballos_raw = cur.fetchall()
+    
+    # Limpieza de espacios en blanco de Firebird
+    caballos = []
+    for fila in caballos_raw:
+        caballos.append([str(col).strip() if col is not None else "" for col in fila])
+
+    conn.close()
+    return render(request, 'gestion/caballos.html', {'caballos': caballos})
+
+
+# 2. ACTUALIZAR (UPDATE)
+def editar_caballo(request, id_caballo):
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
+        return redirect('login_view')
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre_c')
+        raza = request.POST.get('raza')
+        edad = request.POST.get('edad')
+        disponibilidad = request.POST.get('estado_disponibilidad')
+        edad_val = int(edad) if edad else None
+
+        cur.execute("""
+            UPDATE CABALLOS 
+            SET NOMBRE_C = ?, RAZA = ?, EDAD = ?, ESTADO_DISPONIBILIDAD = ? 
+            WHERE ID_CABALLO = ?
+        """, (nombre, raza, edad_val, disponibilidad, id_caballo))
+        conn.commit()
+        conn.close()
+        return redirect('lista_caballos')
+
+    # Obtener los datos actuales del caballo para precargar el formulario
+    cur.execute("SELECT ID_CABALLO, NOMBRE_C, RAZA, EDAD, ESTADO_DISPONIBILIDAD FROM CABALLOS WHERE ID_CABALLO = ?", (id_caballo,))
+    fila = cur.fetchone()
+    conn.close()
+
+    caballo = [str(col).strip() if col is not None else "" for col in fila] if fila else None
+    return render(request, 'gestion/editar_caballo.html', {'caballo': caballo})
+
+
+# 3. ELIMINAR (DELETE)
+def eliminar_caballo(request, id_caballo):
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
+        return redirect('login_view')
+
+    conn = get_connection()
+    cur = conn.cursor()
     try:
-        query_select = """
-            SELECT c.ID_CABALLO, c.NOMBRE_C, c.RAZA, c.ESTADO_DISPONIBILIDAD, s.ESTADO_FISICO
-            FROM CABALLOS c
-            LEFT JOIN SALUD_CABALLO s ON c.ID_CABALLO = s.ID_CABALLO
-        """
-        cur.execute(query_select)
-        datos = cur.fetchall()
-        
-        caballos = []
-        for fila in datos:
-            caballos.append([str(col).strip() if col is not None else "" for col in fila])
-            
+        cur.execute("DELETE FROM CABALLOS WHERE ID_CABALLO = ?", (id_caballo,))
+        conn.commit()
     except Exception as e:
-        print(f"Error al listar caballos: {e}")
-        caballos = []
+        print(f"Error al eliminar: {e}") # Por si tiene llaves foráneas activas
     finally:
         conn.close()
         
-    return render(request, 'gestion/caballos.html', {
-        'caballos': caballos,
-        'admin_nombre': request.session.get('admin_nombre')
-    })
+    return redirect('lista_caballos')
     
+
 def lista_padres(request):
-    if 'admin_id' not in request.session: 
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
         return redirect('login_view')
     
     conn = get_connection()
@@ -222,8 +344,9 @@ def lista_padres(request):
     
     return render(request, 'gestion/padres.html', {'padres': padres})
 
+
 def agendar_cita(request):
-    if 'admin_id' not in request.session:
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
         return redirect('login_view')
 
     conn = get_connection()
@@ -239,54 +362,106 @@ def agendar_cita(request):
         fecha_hora = f"{fecha} {hora}"
 
         try:
-            # Usamos los nombres de tabla en MAYÚSCULAS como se ve en tu terminal
             query_insert = """
                 INSERT INTO SESIONES (ID_PACIENTE, ID_TERAPEUTA, ID_CABALLO, FECHA_HORA, ESTADO_SESION) 
                 VALUES (?, ?, ?, ?, 'Programada')
             """
             cur.execute(query_insert, (id_paciente, id_terapeuta, id_caballo, fecha_hora))
+            
+            query_update_caballo = """
+                UPDATE CABALLOS 
+                SET ESTADO_DISPONIBILIDAD = 'NO DISPONIBLE' 
+                WHERE ID_CABALLO = ?
+            """
+            cur.execute(query_update_caballo, (id_caballo,))
+
             conn.commit()
             return redirect('index')
         except Exception as e:
-            print(f"Error al insertar sesión: {e}")
+            print(f"Error al insertar sesión o actualizar estados: {e}")
         finally:
-            # Cerramos esta conexión antes de continuar o terminar
             conn.close()
-            # Si entramos por POST y falló o terminó, necesitamos reabrir para los selects
             conn = get_connection()
             cur = conn.cursor()
 
-    # --- CARGA DE DATOS PARA LOS SELECTORES ---
     pacientes = []
     terapeutas = []
     caballos = []
 
     try:
-        # 1. Pacientes: Usamos TRIM y UPPER para máxima compatibilidad
-        cur.execute("SELECT ID_PERSONA, NOMBRE FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'PACIENTE'")
+        query_pacientes_libres = """
+            SELECT P.ID_PERSONA, P.NOMBRE 
+            FROM PERSONAS P
+            WHERE UPPER(TRIM(P.ROL)) = 'PACIENTE'
+            AND P.ID_PERSONA NOT IN (
+                SELECT S.ID_PACIENTE 
+                FROM SESIONES S 
+                WHERE S.ESTADO_SESION = 'Programada'
+            )
+        """
+        cur.execute(query_pacientes_libres)
         pacientes = [(p[0], str(p[1]).strip()) for p in cur.fetchall()]
 
-        # 2. Terapeutas
-        cur.execute("SELECT ID_PERSONA, NOMBRE FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'TERAPEUTA'")
+        cur.execute("SELECT ID_PERSONA, NOMBRE FROM PERSONAS WHERE ROL = 'Terapeuta'")
         terapeutas = [(t[0], str(t[1]).strip()) for t in cur.fetchall()]
 
-        # 3. Caballos
         cur.execute("SELECT ID_CABALLO, NOMBRE_C FROM CABALLOS WHERE UPPER(TRIM(ESTADO_DISPONIBILIDAD)) = 'DISPONIBLE'")
-    # Limpiamos espacios en blanco para que el selector no falle
         caballos = [(c[0], str(c[1]).strip()) for c in cur.fetchall()]
-
-        # Imprime esto en tu consola de Linux/VS Code para confirmar que ya hay datos
-        print(f"DEBUG: {len(pacientes)} pacientes y {len(terapeutas)} terapeutas cargados.")
 
     except Exception as e:
         print(f"Error al consultar catálogos: {e}")
     finally:
         conn.close()
 
-    # Renderizado con los datos limpios
     return render(request, 'gestion/agendar.html', {
         'pacientes': pacientes,
         'terapeutas': terapeutas,
         'caballos': caballos,
-        'admin_nombre': request.session.get('admin_nombre')
+        'admin_nombre': request.session.get('usuario_nombre')
+    })
+
+def lista_reportes(request):
+    # Seguridad: Solo el administrador puede ver reportes
+    if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
+        return redirect('login_view')
+        
+    fecha_inicio = request.GET.get('fecha_inicio', '')
+    fecha_fin = request.GET.get('fecha_fin', '')
+    
+    conn = get_connection()
+    cur = conn.cursor()
+    
+    # Consulta base para traer el historial analítico de las sesiones
+    query = """
+        SELECT p_pac.NOMBRE AS PACIENTE, p_ter.NOMBRE AS TERAPEUTA, c.NOMBRE_C AS CABALLO, s.FECHA_HORA, s.ESTADO_SESION
+        FROM SESIONES s
+        JOIN PERSONAS p_pac ON s.ID_PACIENTE = p_pac.ID_PERSONA
+        JOIN PERSONAS p_ter ON s.ID_TERAPEUTA = p_ter.ID_PERSONA
+        JOIN CABALLOS c ON s.ID_CABALLO = c.ID_CABALLO
+    """
+    
+    parametros = []
+    
+    # Si el usuario eligió fechas, filtramos dinámicamente en el WHERE
+    if fecha_inicio and fecha_fin:
+        query += " WHERE s.FECHA_HORA BETWEEN ? AND ?"
+        parametros.extend([f"{fecha_inicio} 00:00:00", f"{fecha_fin} 23:59:59"])
+    
+    query += " ORDER BY s.FECHA_HORA DESC"
+    
+    cur.execute(query, parametros)
+    sesiones_data = cur.fetchall()
+    
+    # Limpiamos posibles espacios en blanco de Firebird
+    sesiones = []
+    for fila in sesiones_data:
+        sesiones.append([str(col).strip() if col is not None else "" for col in fila])
+        
+    conn.close()
+    
+    return render(request, 'gestion/reportes.html', {
+        'sesiones': sesiones,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'admin_nombre': request.session.get('usuario_nombre')
     })
