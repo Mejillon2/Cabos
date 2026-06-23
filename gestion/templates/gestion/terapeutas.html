@@ -1,57 +1,107 @@
 {% extends 'gestion/base.html' %}
-
 {% block content %}
-<!-- ENCABEZADO DE LA SECCIÓN -->
-<div class="main-header" style="margin-bottom: 25px;">
-    <h1><i class="fa-solid fa-user-doctor"></i> Gestión de Terapeutas</h1>
-</div>
-
-<!-- FORMULARIO DE REGISTRO (REUTILIZA TUS CARDS) -->
-<div class="welcome-card" style="padding: 25px; margin-bottom: 25px;">
-    <div class="card-title" style="margin-bottom: 20px;">
-        <i class="fa-solid fa-user-plus" style="color: var(--guinda-principal);"></i> Registrar Nuevo Terapeuta
-    </div>
-    <form method="POST" class="form-horizontal">
-        {% csrf_token %}
-        <input type="text" name="nombre" placeholder="Nombre Completo" required>
-        <input type="text" name="especialidad" placeholder="Especialidad (ej. Psicología)" required>
-        <button type="submit" class="btn-submit-terapeuta">
-            <i class="fa-solid fa-plus"></i> Registrar
-        </button>
-    </form>
-</div>
-
-<!-- TABLA DE REGISTROS (REUTILIZA TUS CARDS) -->
-<div class="welcome-card" style="padding: 25px;">
-    <div class="card-title" style="margin-bottom: 20px;">
-        <i class="fa-solid fa-list" style="color: var(--guinda-principal);"></i> Terapeutas en el Sistema
-    </div>
+<div class="reportes-container">
     
-    <div style="overflow-x: auto;">
-        <table class="data-table-elegante">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Especialidad</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for t in terapeutas %}
-                <tr>
-                    <td style="font-weight: 600; color: var(--texto-oscuro);">{{ t.1 }}</td>
-                    <td style="color: #666;">{{ t.2 }}</td>
-                    <td>
-                        {% if t.3 == 1 %}
-                            <span class="status-pill available">Disponible</span>
-                        {% else %}
-                            <span class="status-pill unavailable">No Disponible</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Encabezado del Módulo -->
+    <div class="reportes-header">
+        <span class="header-icon">👨‍⚕️</span>
+        <div class="header-text">
+            <h2>Gestión de Terapeutas</h2>
+            <p>Administra el personal clínico calificado para las sesiones de equinoterapia de Cuadra Erre.</p>
+        </div>
+    </div>
+
+    <!-- Mensajes de Feedback (Éxito / Errores) -->
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 12px 20px; margin-bottom: 20px; border-radius: 5px; font-weight: bold; font-size: 0.9rem;
+                {% if message.tags == 'success' %} background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+                {% else %} background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; {% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Distribución en dos columnas -->
+    <div class="reportes-wrapper">
+        
+        <!-- Columna Izquierda: Registrar Terapeuta -->
+        <div class="reportes-col-filtro">
+            <div class="reportes-card">
+                <div class="card-title-bar">➕ Registrar Nuevo Terapeuta</div>
+                <div class="card-body-form">
+                    <form method="POST" action="{% url 'lista_terapeutas' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Nombre Completo:</label>
+                            <input type="text" name="nombre" required placeholder="Ej. Carlos Mendoza">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono:</label>
+                            <input type="text" name="telefono" placeholder="Opcional (10 dígitos)">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo Electrónico:</label>
+                            <input type="email" name="correo" placeholder="correo@ejemplo.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; box-sizing: border-box;">
+                        </div>
+                        <div class="form-group">
+                            <label>Especialidad / Notas:</label>
+                            <input type="text" name="especialidad" placeholder="Ej. Fisioterapeuta, Psicólogo">
+                        </div>
+                        <button type="submit" class="btn-submit-terapeuta" style="width: 100%; justify-content: center; margin-top: 10px;">
+                            💾 Guardar Terapeuta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Tabla de Terapeutas Activos -->
+        <div class="reportes-col-tabla">
+            <div class="reportes-card">
+                <div class="card-title-bar">📋 Personal Clínico Registrado</div>
+                <div class="card-body-table table-responsive-scroll">
+                    <table class="data-table-elegante">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Especialidad</th>
+                                <th style="text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in terapeutas %}
+                            <tr>
+                                <td class="txt-muted">{{ t.0 }}</td>
+                                <td class="txt-bold">{{ t.1 }}</td>
+                                <td class="txt-secondary">{% if t.2 %}{{ t.2 }}{% else %}<span class="txt-muted">—</span>{% endif %}</td>
+                                <td class="txt-secondary">{% if t.3 %}{{ t.3 }}{% else %}<span class="txt-muted">—</span>{% endif %}</td>
+                                <td><span class="caballo-tag" style="background: #faf6ee; border-color: var(--dorado-cuadra);">{{ t.4|default:"General" }}</span></td>
+                                <td style="text-align: center; white-space: nowrap;">
+                                    <a href="{% url 'editar_terapeuta' t.0 %}" style="text-decoration: none; color: #007bff; margin-right: 15px; font-weight: bold; font-size: 0.85rem;">✏️ Editar</a>
+                                    <a href="{% url 'eliminar_terapeuta' t.0 %}" onclick="return confirm('¿Seguro que deseas dar de baja a {{ t.1 }}?');" style="text-decoration: none; color: #c0392b; font-weight: bold; font-size: 0.85rem;">🗑️ Borrar</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state-container">
+                                        <div class="empty-icon">👨‍⚕️</div>
+                                        <h3>Sin registros</h3>
+                                        <p>No hay terapeutas dados de alta en este momento.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}

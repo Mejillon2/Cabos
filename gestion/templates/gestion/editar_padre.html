@@ -1,0 +1,49 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+<div class="welcome-card" style="margin-bottom: 20px; padding: 20px;">
+    <h2 style="margin: 0; color: #333; display: flex; align-items: center; gap: 12px; font-size: 1.6rem;">
+        <i class="fa-solid fa-user-gear" style="color: var(--guinda-principal, #800020);"></i> Modificar Tutor
+    </h2>
+    <p style="margin: 5px 0 0 0; color: #777; font-size: 0.9rem;">
+        Modifica la información de contacto del tutor seleccionado.
+    </p>
+</div>
+
+<div class="welcome-card" style="max-width: 600px; padding: 0; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div class="card-title" style="background-color: #333; color: white; padding: 12px 20px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-id-card"></i> Formulario de Edición (ID: {{ id_persona }})
+    </div>
+    
+    <form method="POST" class="form-horizontal" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+        {% csrf_token %}
+        
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Nombre Completo:</label>
+            <input type="text" name="nombre" value="{{ padre_data.nombre }}" required 
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Teléfono de Contacto:</label>
+            <input type="text" name="telefono" value="{{ padre_data.telefono }}" 
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Correo Electrónico:</label>
+            <input type="email" name="correo" value="{{ padre_data.email }}" 
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 20px;">
+            <button type="submit" style="background-color: var(--guinda-principal, #800020); color: white; border: none; padding: 10px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                💾 Guardar Cambios
+            </button>
+            <a href="{% url 'lista_padres' %}" style="display: flex; align-items: center; gap: 6px; padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.9rem;">
+                ❌ Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

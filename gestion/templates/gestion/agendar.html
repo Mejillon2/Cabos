@@ -1,95 +1,122 @@
 {% extends 'gestion/base.html' %}
 
 {% block content %}
-<!-- Encabezado de la Sección -->
-<header class="main-header">
-    <h1><i class="fa-solid fa-calendar-check"></i> Agendar Sesión de Equinoterapia</h1>
-</header>
-
-<div class="welcome-card" style="max-width: 700px; margin: 20px auto; padding: 30px;">
-    <div class="card-title" style="font-size: 1.5rem; border-bottom: 2px solid var(--guinda-principal); padding-bottom: 10px; margin-bottom: 20px;">
-        <i class="fa-solid fa- file-signature"></i> Datos de la Sesión
-    </div>
-
-    <!-- El formulario envía los datos a la vista agendar_cita -->
-    <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        {% csrf_token %}
-
-        <!-- Selección de Paciente -->
-        <div style="grid-column: span 2;">
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Paciente:</label>
-            <select name="paciente" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
-                <option value="" disabled selected>Seleccione al paciente...</option>
-                {% for p in pacientes %}
-                    <option value="{{ p.0 }}">{{ p.1 }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Selección de Terapeuta -->
-        <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Terapeuta:</label>
-            <select name="terapeuta" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
-                <option value="" disabled selected>Seleccione especialista...</option>
-                {% for t in terapeutas %}
-                    <option value="{{ t.0 }}">{{ t.1 }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Selección de Caballo (Basado en imagen_36.png) -->
-        <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Caballo:</label>
-            <select name="caballo" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
-                <option value="" disabled selected>Asignar caballo...</option>
-                {% for c in caballos %}
-                    <option value="{{ c.0 }}">{{ c.1 }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Fecha de la Sesión -->
-        <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Fecha:</label>
-            <input type="date" name="fecha" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
-        </div>
-
-        <!-- Hora de la Sesión -->
-        <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Hora:</label>
-            <input type="time" name="hora" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
-        </div>
-
-        <!-- Estado de la Sesión (Opcional, ya que por defecto es 'Programada') -->
-        <div style="grid-column: span 2;">
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Notas / Observaciones Iniciales:</label>
-            <textarea name="notas" rows="3" placeholder="Detalles importantes para la sesión..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; resize: none;"></textarea>
-        </div>
-
-        <!-- Botones de Acción -->
-        <div style="grid-column: span 2; display: flex; gap: 15px; margin-top: 10px;">
-            <button type="submit" class="btn-logout" style="flex: 2; background-color: var(--guinda-principal); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.3s;">
-                <i class="fa-solid fa-floppy-disk"></i> Agendar Sesión
-            </button>
-            <a href="{% url 'index' %}" style="flex: 1; text-align: center; background-color: #6c757d; color: white; padding: 15px; border-radius: 8px; text-decoration: none; transition: 0.3s;">
-                Cancelar
-            </a>
-        </div>
-    </form>
+<div class="welcome-card" style="margin-bottom: 20px; padding: 20px;">
+    <h2 style="margin: 0; color: #333; display: flex; align-items: center; gap: 12px; font-size: 1.6rem;">
+        Agendar Nueva Sesión
+    </h2>
+    <p style="margin: 5px 0 0 0; color: #777; font-size: 0.9rem;">
+        Asigna un paciente libre, un terapeuta y un caballo disponible para programar una nueva terapia en el sistema.
+    </p>
 </div>
 
-<style>
-    /* Efecto hover para el botón de agendar */
-    button[type="submit"]:hover {
-        background-color: #4d0000 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
+<div style="display: flex; gap: 20px; align-items: start; width: 100%;">
     
-    select:focus, input:focus, textarea:focus {
-        outline: none;
-        border-color: var(--guinda-principal) !important;
-        box-shadow: 0 0 5px rgba(128, 0, 0, 0.2);
-    }
-</style>
+    <div class="welcome-card" style="flex: 1; min-width: 400px; padding: 0; overflow: hidden;">
+        <div class="card-title" style="padding: 15px 20px; font-weight: bold; font-size: 1.1rem;">
+            Detalles de la Programación
+        </div>
+        
+        <form method="POST" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+            {% csrf_token %}
+            
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.95rem;">Paciente Disponible:</label>
+                <select name="paciente" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; background-color: white; font-size: 0.9rem;">
+                    <option value="">-- Selecciona un Paciente sin cita activa --</option>
+                    {% for p in pacientes %}
+                        <option value="{{ p.0 }}">{{ p.1 }} (ID: {{ p.0 }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.95rem;">Terapeuta Asignado:</label>
+                <select name="terapeuta" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; background-color: white; font-size: 0.9rem;">
+                    <option value="">-- Selecciona al Terapeuta --</option>
+                    {% for t in terapeutas %}
+                        <option value="{{ t.0 }}">{{ t.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.95rem;">Caballo Co-terapeuta:</label>
+                <select name="caballo" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; background-color: white; font-size: 0.9rem;">
+                    <option value="">-- Selecciona un Caballo Listo/Disponible --</option>
+                    {% for c in caballos %}
+                        <option value="{{ c.0 }}">🐴 {{ c.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-weight: 600; color: #444; font-size: 0.95rem;">Fecha de la Cita:</label>
+                    <input type="date" name="fecha" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; font-size: 0.9rem;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-weight: 600; color: #444; font-size: 0.95rem;">Hora:</label>
+                    <input type="time" name="hora" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; font-size: 0.9rem;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 20px;">
+                <button type="submit" style="background-color: #800020; color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.95rem;">
+                    💾 Confirmar y Agendar
+                </button>
+                <a href="{% url 'index' %}" style="display: flex; align-items: center; justify-content: center; padding: 12px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.95rem;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="welcome-card" style="flex: 2; padding: 0; overflow: hidden;">
+        <div class="card-title" style="padding: 15px 20px; font-weight: bold; font-size: 1.1rem;">
+            Próximas Terapias Activas
+        </div>
+        
+        <div style="padding: 20px; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #ddd; background-color: #f9f9f9; color: #555;">
+                        <th style="padding: 12px 8px;">PACIENTE</th>
+                        <th style="padding: 12px 8px;">TERAPEUTA</th>
+                        <th style="padding: 12px 8px;">CABALLO</th>
+                        <th style="padding: 12px 8px; text-align: center;">FECHA Y HORA</th>
+                        <th style="padding: 12px 8px; text-align: center;">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in sesiones %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 12px 8px; font-weight: 600; color: #111;">{{ s.1 }}</td>
+                        <td style="padding: 12px 8px; color: #444;">{{ s.2 }}</td>
+                        <td style="padding: 12px 8px; color: #444;">🐴 {{ s.3 }}</td>
+                        <td style="padding: 12px 8px; text-align: center; color: #222;">{{ s.4 }}</td>
+                        <td style="padding: 12px 8px; text-align: center;">
+                            <div style="display: flex; justify-content: center; gap: 12px;">
+                                <a href="{% url 'editar_cita' s.0 %}" style="color: #0d6efd; text-decoration: none; font-weight: 600;">
+                                    ✏️ Editar
+                                </a>
+                                <a href="{% url 'eliminar_cita' s.0 %}" onclick="return confirm('¿Seguro que deseas cancelar esta sesión?');" style="color: #dc3545; text-decoration: none; font-weight: 600;">
+                                    🗑️ Cancelar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                            No hay sesiones programadas actualmente.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

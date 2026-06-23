@@ -1,47 +1,95 @@
 {% extends 'gestion/base.html' %}
 
 {% block content %}
-<header class="main-header">
-    <h1>Gestión de Padres / Tutores</h1>
-</header>
-
-<div class="welcome-card">
-    <div class="card-title">
-        <i class="fa-solid fa-user-plus"></i> Registrar Nuevo Padre
-    </div>
-    <form method="POST" class="form-horizontal">
-        {% csrf_token %}
-        <input type="text" name="nombre" placeholder="Nombre completo del tutor" required 
-               style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 300px;">
-        <button type="submit" class="btn-login" style="width: auto; padding: 10px 20px;">Registrar</button>
-    </form>
+<div class="welcome-card" style="margin-bottom: 20px; padding: 20px;">
+    <h2 style="margin: 0; color: #333; display: flex; align-items: center; gap: 12px; font-size: 1.6rem;">
+        <i class="fa-solid fa-users" style="color: var(--guinda-principal, #800020);"></i> Gestión de Padres / Tutores
+    </h2>
+    <p style="margin: 5px 0 0 0; color: #777; font-size: 0.9rem;">
+        Registra y administra las cuentas de contacto de los padres o tutores responsables de los pacientes.
+    </p>
 </div>
 
-<div class="welcome-card" style="margin-top: 20px;">
-    <div class="card-title">
-        <i class="fa-solid fa-address-book"></i> Directorio de Padres
+<div style="display: flex; gap: 20px; align-items: start;">
+    
+    <div class="welcome-card" style="flex: 1; min-width: 350px; padding: 0; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div class="card-title" style="background-color: #333; color: white; padding: 12px 20px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-user-plus"></i> Registrar Nuevo Tutor
+        </div>
+        
+        <form method="POST" class="form-horizontal" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+            {% csrf_token %}
+            
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Nombre del Tutor:</label>
+                <input type="text" name="nombre" placeholder="Ej. Carlos Mendoza" required 
+                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Teléfono de Contacto:</label>
+                <input type="text" name="telefono" placeholder="Ej. 5512345678" 
+                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Correo Electrónico:</label>
+                <input type="email" name="correo" placeholder="Ej. tutor@correo.com" 
+                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+            </div>
+            
+            <button type="submit" style="margin-top: 10px; background-color: var(--guinda-principal, #800020); color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+                💾 Guardar Tutor
+            </button>
+        </form>
     </div>
-    <table class="data-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-        <thead>
-            <tr style="border-bottom: 2px solid var(--guinda-principal); text-align: left;">
-                <th style="padding: 10px;">ID</th>
-                <th style="padding: 10px;">Nombre</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in padres %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 10px;">{{ p.0 }}</td>
-                <td style="padding: 10px;">{{ p.1 }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="2" style="padding: 20px; text-align: center; color: #888;">
-                    No hay padres registrados para asociar a los pacientes.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <div class="welcome-card" style="flex: 2; padding: 0; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div class="card-title" style="background-color: #333; color: white; padding: 12px 20px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-address-book"></i> Tutores Activos
+        </div>
+        
+        <div style="padding: 15px; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #ddd; color: #555; background-color: #f9f9f9;">
+                        <th style="padding: 12px 10px; width: 40px; text-align: center;">ID</th>
+                        <th style="padding: 12px 10px;">NOMBRE</th>
+                        <th style="padding: 12px 10px;">TELEFONO</th>
+                        <th style="padding: 12px 10px;">EMAIL</th>
+                        <th style="padding: 12px 10px; text-align: center; width: 150px;">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in padres %}
+                    <tr style="border-bottom: 1px solid #eee; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#fcfcfc'" onmouseout="this.style.backgroundColor='transparent'">
+                        <td style="padding: 12px 10px; text-align: center; color: #777;">{{ p.0 }}</td>
+                        <td style="padding: 12px 10px; color: #111; font-weight: 600;">{{ p.1 }}</td>
+                        <td style="padding: 12px 10px; color: #555;">{{ p.2|default:"-" }}</td>
+                        <td style="padding: 12px 10px; color: #555;">{{ p.3|default:"-" }}</td>
+                        <td style="padding: 12px 10px; text-align: center;">
+                            <div style="display: flex; justify-content: center; gap: 15px;">
+                                <a href="{% url 'editar_padres' p.0 %}" style="color: #0d6efd; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 500;">
+                                    ✏️ Editar
+                                </a>
+                                <a href="{% url 'eliminar_padres' p.0 %}" onclick="return confirm('¿Seguro que deseas eliminar a este tutor?');" style="color: #dc3545; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 500;">
+                                    🗑️ Borrar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px; color: #999;">
+                            <i class="fa-solid fa-folder-open" style="font-size: 1.5rem; display: block; margin-bottom: 5px;"></i>
+                            No hay tutores registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

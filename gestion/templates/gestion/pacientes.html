@@ -1,58 +1,113 @@
 {% extends 'gestion/base.html' %}
 
 {% block content %}
-<header class="main-header">
-    <h1>Gestión de Pacientes</h1>
-</header>
-
-<!-- Formulario para registrar pacientes -->
-<div class="welcome-card">
-    <div class="card-title">
-        <i class="fa-solid fa-child"></i> Registrar Nuevo Paciente
-    </div>
-    <form method="POST" class="form-horizontal">
-        {% csrf_token %}
-        <input type="text" name="nombre" placeholder="Nombre completo del niño" required>
-        
-        <!-- Selector de Padres (viene de la vista que hicimos antes) -->
-        <select name="id_padre" required style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex: 1;">
-            <option value="">Selecciona al Padre/Tutor</option>
-            {% for padre in padres %}
-                <option value="{{ padre.0 }}">{{ padre.1 }}</option>
-            {% endfor %}
-        </select>
-
-        <input type="date" name="fecha_nac" title="Fecha de Nacimiento" required>
-        <input type="text" name="diagnostico" placeholder="Diagnóstico inicial" required>
-        
-        <button type="submit" class="btn-logout" style="margin:0; background-color: var(--guinda-principal); cursor:pointer;">
-            Registrar Paciente
-        </button>
-    </form>
+<!-- Encabezado de la Sección -->
+<div class="welcome-card" style="margin-bottom: 20px; padding: 20px;">
+    <h2 style="margin: 0; color: #333; display: flex; align-items: center; gap: 12px; font-size: 1.6rem;">
+        <i class="fa-solid fa-child" style="color: var(--guinda-principal, #800020);"></i> Gestión de Pacientes
+    </h2>
+    <p style="margin: 5px 0 0 0; color: #777; font-size: 0.9rem;">
+        Registra, edita o consulta la información clínica de los niños destinados a las sesiones de equinoterapia.
+    </p>
 </div>
 
-<!-- Tabla de pacientes registrados -->
-<div class="welcome-card" style="margin-top: 25px;">
-    <div class="card-title"><i class="fa-solid fa-list"></i> Lista de Pacientes</div>
-    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-        <thead>
-            <tr style="text-align: left; border-bottom: 2px solid var(--guinda-principal);">
-                <th style="padding: 10px;">Paciente</th>
-                <th style="padding: 10px;">Padre/Tutor</th>
-                <th style="padding: 10px;">Diagnóstico</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in pacientes %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 10px;">{{ p.0 }}</td>
-                <td style="padding: 10px;">{{ p.1 }}</td>
-                <td style="padding: 10px;">{{ p.2 }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="3" style="text-align: center; padding: 20px;">No hay pacientes registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- Contenedor de Rejilla (2 Columnas Paralelas) -->
+<div style="display: flex; gap: 20px; align-items: start;">
+    
+    <!-- TARJETA IZQUIERDA: Formulario de Registro -->
+    <div class="welcome-card" style="flex: 1; min-width: 350px; padding: 0; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div class="card-title" style="background-color: #333; color: white; padding: 12px 20px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-plus"></i> Registrar Nuevo Paciente
+        </div>
+        
+        <form method="POST" class="form-horizontal" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+            {% csrf_token %}
+            
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Nombre del Paciente:</label>
+                <input type="text" name="nombre" placeholder="Ej. Valeria Colin" required 
+                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Padre/Tutor Responsable:</label>
+                <select name="id_padre" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; background-color: white;">
+                    <option value="">Selecciona al Padre/Tutor</option>
+                    {% for padre in padres %}
+                        <option value="{{ padre.0 }}">{{ padre.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Fecha de Nacimiento:</label>
+                <input type="date" name="fecha_nac" required 
+                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Diagnóstico Inicial:</label>
+                <textarea name="diagnostico" placeholder="Ej. Síndrome de Down, TDAH..." required rows="3"
+                          style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; font-family: inherit; resize: none;"></textarea>
+            </div>
+            
+            <button type="submit" style="margin-top: 10px; background-color: var(--guinda-principal, #800020); color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+                💾 Guardar Paciente
+            </button>
+        </form>
+    </div>
+
+    <!-- TARJETA DERECHA: Inventario Activo (Tabla) -->
+    <div class="welcome-card" style="flex: 2; padding: 0; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div class="card-title" style="background-color: #333; color: white; padding: 12px 20px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-list"></i> Pacientes Activos
+        </div>
+        
+        <div style="padding: 15px; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #ddd; color: #555; background-color: #f9f9f9;">
+                        <th style="padding: 12px 10px; width: 40px; text-align: center;">ID</th>
+                        <th style="padding: 12px 10px;">NOMBRE</th>
+                        <th style="padding: 12px 10px;">FECHA NAC.</th>
+                        <th style="padding: 12px 10px;">DIAGNÓSTICO</th>
+                        <th style="padding: 12px 10px; text-align: center; width: 120px;">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pacientes %}
+                    <tr style="border-bottom: 1px solid #eee; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#fcfcfc'" onmouseout="this.style.backgroundColor='transparent'">
+                        <td style="padding: 12px 10px; text-align: center; color: #777;">{{ p.0 }}</td>
+                        <td style="padding: 12px 10px; color: #111; font-weight: 600;">{{ p.1 }}</td>
+                        <td style="padding: 12px 10px; color: #555; white-space: nowrap;">{{ p.4 }}</td>
+                        <td style="padding: 12px 10px; color: #666;">
+                            <div style="max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ p.5 }}">
+                                {{ p.5 }}
+                            </div>
+                        </td>
+                        <td style="padding: 12px 10px; text-align: center;">
+                            <div style="display: flex; justify-content: center; gap: 12px;">
+                                <a href="{% url 'editar_paciente' p.0 %}" style="color: #0d6efd; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 500;">
+                                    ✏️ Editar
+                                </a>
+                                <a href="{% url 'eliminar_paciente' p.0 %}" onclick="return confirm('¿Seguro que deseas eliminar a este paciente? Esta acción borrará también su historial clínico.');" style="color: #dc3545; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 500;" title="Eliminar Paciente">
+                                    🗑️ Borrar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px; color: #999;">
+                            <i class="fa-solid fa-folder-open" style="font-size: 1.5rem; display: block; margin-bottom: 5px;"></i>
+                            No hay pacientes registrados en el sistema.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

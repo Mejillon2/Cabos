@@ -2,6 +2,7 @@
 {% block content %}
 <div class="reportes-container">
     
+    <!-- Encabezado del Módulo -->
     <div class="reportes-header">
         <span class="header-icon">🐴</span>
         <div class="header-text">
@@ -10,7 +11,10 @@
         </div>
     </div>
 
+    <!-- Contenedor en dos columnas con Flexbox responsivo -->
     <div class="reportes-wrapper">
+        
+        <!-- Columna Izquierda: Formulario de Registro -->
         <div class="reportes-col-filtro">
             <div class="reportes-card">
                 <div class="card-title-bar">➕ Registrar Nuevo Caballo</div>
@@ -31,7 +35,8 @@
                         </div>
                         <div class="form-group">
                             <label>Estado de Disponibilidad:</label>
-                            <select name="estado_disponibilidad" style="width:100%; padding:10px; border-radius:5px; border:1px solid #ccc;">
+                            <!-- El select heredará las propiedades globales del contenedor de formulario -->
+                            <select name="estado_disponibilidad" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; box-sizing: border-box;">
                                 <option value="Disponible">Disponible</option>
                                 <option value="En Mantenimiento">En Mantenimiento</option>
                                 <option value="No Disponible">No Disponible</option>
@@ -43,10 +48,11 @@
             </div>
         </div>
 
+        <!-- Columna Derecha: Tabla de Inventario Activo -->
         <div class="reportes-col-tabla">
             <div class="reportes-card">
                 <div class="card-title-bar">📋 Inventario Activo</div>
-                <div class="card-body-table">
+                <div class="card-body-table table-responsive-scroll">
                     <table class="tabla-reporte-custom">
                         <thead>
                             <tr>
@@ -61,23 +67,37 @@
                         <tbody>
                             {% for c in caballos %}
                             <tr>
-                                <td>{{ c.0 }}</td>
+                                <td class="txt-muted">{{ c.0 }}</td>
                                 <td class="txt-bold">{{ c.1 }}</td>
-                                <td>{{ c.2 }}</td>
-                                <td>{% if c.3 != 'None' %}{{ c.3 }} años{% else %}N/A{% endif %}</td>
+                                <td class="txt-secondary">{{ c.2 }}</td>
                                 <td>
-                                    <span class="status-badge-green" style="background-color: {% if c.4 == 'Disponible' %}rgba(40,167,69,0.1){% else %}rgba(220,53,69,0.1){% endif %}; color: {% if c.4 == 'Disponible' %}#28a745{% else %}#dc3545{% endif %}; border: 1px solid {% if c.4 == 'Disponible' %}rgba(40,167,69,0.2){% else %}rgba(220,53,69,0.2){% endif %};">
-                                        {{ c.4 }}
-                                    </span>
+                                    {% if c.3 and c.3 != 'None' and c.3 != '' %}
+                                        {{ c.3 }} años
+                                    {% else %}
+                                        <span class="txt-muted">N/A</span>
+                                    {% endif %}
                                 </td>
-                                <td style="text-align: center;">
-                                    <a href="{% url 'editar_caballo' c.0 %}" style="text-decoration:none; color:#007bff; margin-right:10px; font-weight:bold;">✏️ Editar</a>
-                                    <a href="{% url 'eliminar_caballo' c.0 %}" onclick="return confirm('¿Seguro que deseas eliminar a {{ c.1 }}?');" style="text-decoration:none; color:#dc3545; font-weight:bold;">🗑️ Borrar</a>
+                                <td>
+                                    {% if c.4 == 'Disponible' %}
+                                        <span class="status-pill available">Disponible</span>
+                                    {% else %}
+                                        <span class="status-pill unavailable">{{ c.4 }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center; white-space: nowrap;">
+                                    <a href="{% url 'editar_caballo' c.0 %}" style="text-decoration: none; color: #007bff; margin-right: 15px; font-weight: bold; font-size: 0.85rem;">✏️ Editar</a>
+                                    <a href="{% url 'eliminar_caballo' c.0 %}" onclick="return confirm('¿Seguro que deseas eliminar a {{ c.1 }}?');" style="text-decoration: none; color: #c0392b; font-weight: bold; font-size: 0.85rem;">🗑️ Borrar</a>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="6" style="text-align:center; padding:20px; color:#777;">No hay caballos registrados en el sistema.</td>
+                                <td colspan="6">
+                                    <div class="empty-state-container">
+                                        <div class="empty-icon">🐴</div>
+                                        <h3>Sin registros</h3>
+                                        <p>No hay caballos registrados en el sistema.</p>
+                                    </div>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -85,6 +105,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 {% endblock %}

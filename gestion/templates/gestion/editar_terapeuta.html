@@ -1,0 +1,55 @@
+{% extends 'gestion/base.html' %}
+{% block content %}
+<div class="reportes-container">
+    
+    <!-- Encabezado -->
+    <div class="reportes-header">
+        <span class="header-icon">📝</span>
+        <div class="header-text">
+            <h2>Modificar Terapeuta</h2>
+            <p>Actualiza los datos profesionales o de contacto del personal clínico seleccionado.</p>
+        </div>
+    </div>
+
+    <div style="max-width: 600px; margin: 0 auto;">
+        <div class="reportes-card">
+            <div class="card-title-bar">👤 Datos de: {{ terapeuta.1 }}</div>
+            <div class="card-body-form">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label>Nombre Completo:</label>
+                        <input type="text" name="nombre" value="{{ id_terapeuta_or_nombre|default:terapeuta.1 }}" required placeholder="Ej. Carlos Mendoza">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Teléfono:</label>
+                        <input type="text" name="telefono" value="{% if id_terapeuta_or_nombre.2 != None %}{{ id_terapeuta_or_nombre.2 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.2|default:'' }}{% endif %}" placeholder="Opcional (10 dígitos)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Correo Electrónico:</label>
+                        <input type="email" name="correo" value="{% if id_terapeuta_or_nombre.3 != None %}{{ id_terapeuta_or_nombre.3 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.3|default:'' }}{% endif %}" placeholder="correo@ejemplo.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; box-sizing: border-box;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Especialidad / Notas:</label>
+                        <input type="text" name="especialidad" value="{% if id_terapeuta_or_nombre.4 != None %}{{ id_terapeuta_or_nombre.4 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.4|default:'' }}{% endif %}" placeholder="Ej. Fisioterapeuta, Psicólogo">
+                    </div>
+
+                    <!-- Botones de Acción integrados -->
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <a href="{% url 'lista_terapeutas' %}" class="btn-logout" style="flex: 1; margin: 0; display: inline-flex; justify-content: center; align-items: center; text-decoration: none; font-weight: bold; font-size: 0.95rem;">
+                            ❌ Cancelar
+                        </a>
+                        <button type="submit" class="btn-submit-terapeuta" style="flex: 1; justify-content: center; padding: 12px 25px;">
+                            💾 Actualizar Datos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -263,7 +263,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    border-left: 5px solid #7a1c2e; /* Color guinda coordinado */
+    border-left: 5px solid var(--guinda-principal); /* Ligado a tu paleta real */
     margin-bottom: 25px;
 }
 .header-icon {
@@ -339,7 +339,7 @@ body {
 }
 .btn-submit-reporte {
     width: 100%;
-    background-color: #7a1c2e; /* Guinda */
+    background-color: var(--guinda-principal);
     color: white;
     border: none;
     padding: 12px;
@@ -349,6 +349,9 @@ body {
     cursor: pointer;
     transition: background 0.2s;
     margin-top: 10px;
+}
+.btn-submit-reporte:hover {
+    background-color: var(--guinda-oscuro);
 }
 .btn-submit-reporte:hover {
     background-color: #5a1220;
@@ -422,3 +425,16 @@ body {
 }
 .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
 .empty-state-container h3 { margin: 0 0 5px 0; color: #444; }
+
+.card-body-form input[type="date"],
+.card-body-form input[type="text"],
+.card-body-form input[type="number"],
+.card-body-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
