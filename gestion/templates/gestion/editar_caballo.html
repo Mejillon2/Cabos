@@ -16,15 +16,21 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label>Nombre del Caballo:</label>
-                    <input type="text" name="nombre_c" value="{{ caballo.1 }}" required>
+                    <input type="text" name="nombre_c" value="{{ caballo.1 }}" required
+                           pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,})*$" 
+                           title="Solo letras. Mínimo 3 letras por palabra, un solo espacio intermedio y sin espacios en las orillas.">
                 </div>
                 <div class="form-group">
                     <label>Raza:</label>
-                    <input type="text" name="raza" value="{{ caballo.2 }}" required>
+                    <input type="text" name="raza" value="{{ caballo.2 }}" required
+                           pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,})*$" 
+                           title="Solo letras. Cada palabra debe tener mínimo 3 letras, un espacio intermedio y sin espacios en las orillas.">
                 </div>
                 <div class="form-group">
                     <label>Edad (Años):</label>
-                    <input type="number" name="edad" value="{% if caballo.3 != 'None' %}{{ caballo.3 }}{% endif %}">
+                    <input type="number" name="edad" value="{% if caballo.3 != 'None' %}{{ caballo.3 }}{% endif %}" required
+                           min="5" max="45"
+                           title="La edad del caballo debe ser un número entero entre 5 y 45 años.">
                 </div>
                 <div class="form-group">
                     <label>Estado de Disponibilidad:</label>

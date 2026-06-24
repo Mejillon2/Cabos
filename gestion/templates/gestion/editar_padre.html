@@ -21,19 +21,25 @@
         <div style="display: flex; flex-direction: column; gap: 5px;">
             <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Nombre Completo:</label>
             <input type="text" name="nombre" value="{{ padre_data.nombre }}" required 
-                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;"
+                   pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,})*$" 
+                   title="Solo letras. Cada palabra debe tener mínimo 3 letras, un solo espacio intermedio y sin espacios a los extremos.">
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 5px;">
             <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Teléfono de Contacto:</label>
             <input type="text" name="telefono" value="{{ padre_data.telefono }}" 
-                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;"
+                   pattern="^\d{10}$" 
+                   title="El teléfono debe tener exactamente 10 dígitos numéricos, sin espacios ni guiones.">
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 5px;">
             <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Correo Electrónico:</label>
             <input type="email" name="correo" value="{{ padre_data.email }}" 
-                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;"
+                   pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" 
+                   title="Debe ser un correo válido que termine estrictamente en @gmail.com">
         </div>
 
         <div style="display: flex; gap: 15px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 20px;">

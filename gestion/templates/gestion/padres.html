@@ -22,20 +22,26 @@
             
             <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Nombre del Tutor:</label>
-                <input type="text" name="nombre" placeholder="Ej. Carlos Mendoza" required 
-                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+                <input type="text" name="nombre" value="{{ valores.nombre|default:'' }}" placeholder="Ej. Carlos Mendoza" required 
+                        style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;"
+                        pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,})*$" 
+                        title="Solo letras. Cada palabra debe tener mínimo 3 letras, un solo espacio intermedio y sin espacios a los extremos.">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Teléfono de Contacto:</label>
-                <input type="text" name="telefono" placeholder="Ej. 5512345678" 
-                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+                <input type="text" name="telefono" value="{{ valores.telefono|default:'' }}" placeholder="Ej. 5512345678" 
+                        style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;"
+                        pattern="^\d{10}$" 
+                        title="El teléfono debe tener exactamente 10 dígitos numéricos, sin espacios ni guiones.">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Correo Electrónico:</label>
-                <input type="email" name="correo" placeholder="Ej. tutor@correo.com" 
-                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
+                <input type="email" name="correo" value="{{ valores.correo|default:'' }}" placeholder="Ej. tutor@correo.com" 
+                        style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;"
+                        pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" 
+                        title="Debe ser un correo válido que termine estrictamente en @gmail.com">
             </div>
             
             <button type="submit" style="margin-top: 10px; background-color: var(--guinda-principal, #800020); color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">

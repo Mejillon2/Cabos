@@ -29,13 +29,13 @@
                        style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box;">
             </div>
             
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-                <label style="font-weight: 600; color: #444; font-size: 0.9rem;">Padre/Tutor Responsable:</label>
-                <select name="id_padre" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; background-color: white;">
-                    <option value="">Selecciona al Padre/Tutor</option>
-                    {% for padre in padres %}
-                        <option value="{{ padre.0 }}">{{ padre.1 }}</option>
-                    {% endfor %}
+            <div class="mb-3">
+                <label for="padre" class="form-label"><b>Padre/Tutor Responsable:</b></label>
+                <select class="form-select" id="padre" name="padre" required>
+                    <option value="" disabled selected>Selecciona al Padre/Tutor</option>
+                    {% for id_padre, nombre_padre in padres %}
+                    <option value="{{ id_padre }}">{{ nombre_padre }}</option>
+                {% endfor %}
                 </select>
             </div>
 

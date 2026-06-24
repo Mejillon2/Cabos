@@ -20,22 +20,30 @@
                     
                     <div class="form-group">
                         <label>Nombre Completo:</label>
-                        <input type="text" name="nombre" value="{{ id_terapeuta_or_nombre|default:terapeuta.1 }}" required placeholder="Ej. Carlos Mendoza">
+                        <input type="text" name="nombre" value="{{ id_terapeuta_or_nombre|default:terapeuta.1 }}" required placeholder="Ej. Carlos Mendoza"
+                               pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,})*$" 
+                               title="Solo letras. Cada palabra debe tener mínimo 3 letras y solo un espacio entre ellas. Sin espacios al inicio o final.">
                     </div>
                     
                     <div class="form-group">
                         <label>Teléfono:</label>
-                        <input type="text" name="telefono" value="{% if id_terapeuta_or_nombre.2 != None %}{{ id_terapeuta_or_nombre.2 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.2|default:'' }}{% endif %}" placeholder="Opcional (10 dígitos)">
+                        <input type="text" name="telefono" value="{% if id_terapeuta_or_nombre.2 != None %}{{ id_terapeuta_or_nombre.2 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.2|default:'' }}{% endif %}" placeholder="Opcional (10 dígitos)"
+                               pattern="^\d{10}$" 
+                               title="El teléfono debe tener exactamente 10 dígitos numéricos, sin espacios ni guiones.">
                     </div>
                     
                     <div class="form-group">
                         <label>Correo Electrónico:</label>
-                        <input type="email" name="correo" value="{% if id_terapeuta_or_nombre.3 != None %}{{ id_terapeuta_or_nombre.3 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.3|default:'' }}{% endif %}" placeholder="correo@ejemplo.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; box-sizing: border-box;">
+                        <input type="email" name="correo" value="{% if id_terapeuta_or_nombre.3 != None %}{{ id_terapeuta_or_nombre.3 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.3|default:'' }}{% endif %}" placeholder="correo@ejemplo.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; box-sizing: border-box;"
+                               pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" 
+                               title="Debe ser un correo válido que termine estrictamente en @gmail.com">
                     </div>
                     
                     <div class="form-group">
                         <label>Especialidad / Notas:</label>
-                        <input type="text" name="especialidad" value="{% if id_terapeuta_or_nombre.4 != None %}{{ id_terapeuta_or_nombre.4 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.4|default:'' }}{% endif %}" placeholder="Ej. Fisioterapeuta, Psicólogo">
+                        <input type="text" name="especialidad" value="{% if id_terapeuta_or_nombre.4 != None %}{{ id_terapeuta_or_nombre.4 }}{% else %}{{ id_terapeuta_or_nombre|default:terapeuta.4|default:'' }}{% endif %}" placeholder="Ej. Fisioterapeuta, Psicólogo" required
+                               pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{4,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{4,})*$" 
+                               title="Solo letras. Cada palabra debe tener un mínimo de 4 letras, un solo espacio entre ellas y sin espacios a los extremos.">
                     </div>
 
                     <!-- Botones de Acción integrados -->

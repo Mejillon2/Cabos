@@ -23,23 +23,28 @@
                         {% csrf_token %}
                         <div class="form-group">
                             <label>Nombre del Caballo:</label>
-                            <input type="text" name="nombre_c" required placeholder="Ej. Centella">
+                            <input type="text" name="nombre_c" value="{{ valores.nombre_c|default:'' }}" required placeholder="Ej. Centella"
+                                   pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,})*$" 
+                                   title="Solo letras. Mínimo 3 letras por palabra, un solo espacio intermedio y sin espacios en las orillas.">
                         </div>
                         <div class="form-group">
                             <label>Raza:</label>
-                            <input type="text" name="raza" required placeholder="Ej. Cuarto de Milla">
+                            <input type="text" name="raza" value="{{ valores.raza|default:'' }}" required placeholder="Ej. Cuarto de Milla"
+                                   pattern="^[a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,}(?: [a-zA-ZÁéíóúÁÉÍÓÚñÑ]{3,})*$" 
+                                   title="Solo letras. Cada palabra debe tener mínimo 3 letras, un espacio intermedio y sin espacios en las orillas.">
                         </div>
                         <div class="form-group">
                             <label>Edad (Años):</label>
-                            <input type="number" name="edad" placeholder="Opcional">
+                            <input type="number" name="edad" value="{{ valores.edad|default:'' }}" placeholder="Opcional" required
+                                   min="5" max="45"
+                                   title="La edad del caballo debe ser un número entero entre 5 y 45 años.">
                         </div>
                         <div class="form-group">
                             <label>Estado de Disponibilidad:</label>
-                            <!-- El select heredará las propiedades globales del contenedor de formulario -->
                             <select name="estado_disponibilidad" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; box-sizing: border-box;">
-                                <option value="Disponible">Disponible</option>
-                                <option value="En Mantenimiento">En Mantenimiento</option>
-                                <option value="No Disponible">No Disponible</option>
+                                    <option value="Disponible" {% if valores.estado_disponibilidad == 'Disponible' %}selected{% endif %}>Disponible</option>
+                                    <option value="En Mantenimiento" {% if valores.estado_disponibilidad == 'En Mantenimiento' %}selected{% endif %}>En Mantenimiento</option>
+                                    <option value="No Disponible" {% if valores.estado_disponibilidad == 'No Disponible' %}selected{% endif %}>No Disponible</option>
                             </select>
                         </div>
                         <button type="submit" class="btn-submit-reporte">💾 Guardar Caballo</button>
