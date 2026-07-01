@@ -90,15 +90,18 @@ def login_view(request):
             prefijo_rol = usuario_ingresado.split('_')[0]
             conn = get_connection()
             cur = conn.cursor()
+            
+            # CORRECCIÓN AQUÍ: Se añadieron comillas dobles estrictas para el dialecto Firebird 5.0
             if prefijo_rol == 'AD':
-                query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE, ROL, ES_ADMIN FROM PERSONAS WHERE USUARIO = ? AND ES_ADMIN = 1'
+                query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE, ROL, ES_ADMIN FROM PERSONAS WHERE "USUARIO" = ? AND "ES_ADMIN" = 1'
                 cur.execute(query, (usuario_ingresado,))
             else:
                 mapa_roles = {'TE': 'Terapeuta', 'PA': 'Padre'}
                 rol_esperado = mapa_roles.get(prefijo_rol)
                 
-                query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE, ROL, ES_ADMIN FROM PERSONAS WHERE USUARIO = ? AND UPPER(TRIM(ROL)) = UPPER(?)'
+                query = 'SELECT ID_PERSONA, PASSWORD, NOMBRE, ROL, ES_ADMIN FROM PERSONAS WHERE "USUARIO" = ? AND UPPER(TRIM("ROL")) = UPPER(?)'
                 cur.execute(query, (usuario_ingresado, rol_esperado))
+                
             usuario = cur.fetchone()
             conn.close()
             if usuario:
@@ -131,10 +134,9 @@ def lista_pacientes(request):
     conn = get_connection()
     cur = conn.cursor()
     
-    # === 1. PROCESAR EL REGISTRO CUANDO SE ENVÍA EL FORMULARIO (POST) ===
     if request.method == 'POST':
         nombre = request.POST.get('nombre', '').strip()
-        id_padre = request.POST.get('padre')  # Captura el ID seleccionado del select
+        id_padre = request.POST.get('padre')  
         fecha_nac = request.POST.get('fecha_nac')
         diagnostico = request.POST.get('diagnostico', '').strip()
         
@@ -152,17 +154,14 @@ def lista_pacientes(request):
             
         if not hubo_error:
             try:
-                # Insertar primero en PERSONAS generales
                 cur.execute("""
                     INSERT INTO PERSONAS (NOMBRE, ROL) 
                     VALUES (?, 'Paciente')
                 """, (nombre,))
                 
-                # Obtener el ID generado para el nuevo paciente
                 cur.execute("SELECT MAX(ID_PERSONA) FROM PERSONAS")
                 nuevo_id_paciente = cur.fetchone()[0]
                 
-                # Insertar en PACIENTES_INFO agregando el ID_PADRE (tutor)
                 cur.execute("""
                     INSERT INTO PACIENTES_INFO (ID_PACIENTE, ID_PADRE, FECHA_NAC, DIAGNOSTICO) 
                     VALUES (?, ?, ?, ?)
@@ -177,8 +176,6 @@ def lista_pacientes(request):
                 print(f"Error al insertar paciente: {e}")
                 messages.error(request, f"Error en la base de datos: {str(e)}")
 
-    # === 2. LEER DATOS PARA RENDERIZAR LA VISTA (GET o tras un error en POST) ===
-    # Consulta A: Lista de Pacientes para la Tabla de la derecha
     query_get_pacientes = """
         SELECT p.ID_PERSONA, p.NOMBRE, p.TELEFONO, p.EMAIL, t.FECHA_NAC, t.DIAGNOSTICO 
         FROM PERSONAS p
@@ -200,7 +197,6 @@ def lista_pacientes(request):
                 registro.append(str(col).strip())
         pacientes.append(registro)
         
-    # Consulta B: Lista de Padres/Tutores para llenar el SELECT del Formulario
     query_get_padres = """
         SELECT ID_PERSONA, NOMBRE 
         FROM PERSONAS 
@@ -211,8 +207,6 @@ def lista_pacientes(request):
     padres = [(row[0], str(row[1]).strip()) for row in cur.fetchall()]
     
     conn.close()
-    
-    # Enviamos tanto la lista de pacientes como la lista de padres al HTML
     return render(request, 'gestion/pacientes.html', {
         'pacientes': pacientes,
         'padres': padres
@@ -321,7 +315,6 @@ def lista_terapeutas(request):
     
     conn = get_connection()
     cur = conn.cursor()
-    
     valores_previos = None
     hubo_error = False
 
@@ -341,35 +334,26 @@ def lista_terapeutas(request):
         if not re.match(REGEX_MIN_3_LETRAS, nombre):
             messages.error(request, "Error en Nombre: Solo letras, un espacio intermedio, mínimo 3 letras por palabra y sin espacios extremos.")
             hubo_error = True
-            
         elif telefono and not re.match(REGEX_TELEFONO, telefono):
             messages.error(request, "Error en Teléfono: El número telefónico debe constar de exactamente 10 dígitos.")
             hubo_error = True
-            
         elif correo and not re.match(REGEX_GMAIL, correo):
             messages.error(request, "Error en Correo: Debe ser una dirección terminada en @gmail.com sin espacios.")
             hubo_error = True
-            
         elif not re.match(REGEX_ESPECIALIDAD, especialidad):
             messages.error(request, "Error en Especialidad/Notas: Solo letras, sin espacios en los extremos y mínimo 4 letras por palabra.")
             hubo_error = True
 
         if not hubo_error:
             try:
-                # 1. Insertamos primero en la tabla PERSONAS (sin ESPECIALIDAD)
                 cur.execute("""
                     INSERT INTO PERSONAS (NOMBRE, TELEFONO, EMAIL, ROL) 
                     VALUES (?, ?, ?, 'Terapeuta')
                 """, (nombre, telefono if telefono else None, correo if correo else None))
                 
-                # 2. Obtenemos el ID de la persona que se acaba de crear
-                # Dependiendo de tu BD, si usas Firebird/Interbase (por el formato del error parece ser Firebird o similar con pyodbc)
-                # puedes usar cur.execute("SELECT @@IDENTITY") o el método de tu conector. 
-                # Si es Firebird habitual, puedes hacer:
                 cur.execute("SELECT MAX(ID_PERSONA) FROM PERSONAS")
                 nuevo_id = cur.fetchone()[0]
                 
-                # 3. Insertamos la especialidad en TERAPEUTAS_INFO ligada al nuevo ID
                 cur.execute("""
                     INSERT INTO TERAPEUTAS_INFO (ID_TERAPEUTA, ESPECIALIDAD)
                     VALUES (?, ?)
@@ -379,14 +363,12 @@ def lista_terapeutas(request):
                 messages.success(request, f"Terapeuta '{nombre}' registrado con éxito.")
                 conn.close()
                 return redirect('lista_terapeutas')
-                
             except Exception as e:
-                conn.rollback() # Importante hacer rollback si el segundo insert falla
+                conn.rollback() 
                 print(f"Error al insertar terapeuta: {e}")
                 messages.error(request, f"Error al guardar: {str(e)}")
                 hubo_error = True
 
-    # Carga de la lista de la tabla tanto para GET como para errores en POST
     query_get = """
         SELECT p.ID_PERSONA, p.NOMBRE, p.TELEFONO, p.EMAIL, t.ESPECIALIDAD 
         FROM PERSONAS p
@@ -478,21 +460,16 @@ def eliminar_terapeuta(request, id_persona):
     conn = get_connection()
     cur = conn.cursor()
     try:
-        # 1. Borramos primero el detalle en TERAPEUTAS_INFO para liberar la llave foránea
         cur.execute("DELETE FROM TERAPEUTAS_INFO WHERE ID_TERAPEUTA = ?", (id_persona,))
-        
-        # 2. Ahora sí podemos borrar de forma segura el registro en PERSONAS
         cur.execute("DELETE FROM PERSONAS WHERE ID_PERSONA = ? AND UPPER(TRIM(ROL)) = 'TERAPEUTA'", (id_persona,))
-        
         conn.commit()
         messages.success(request, "Terapeuta eliminado correctamente.")
     except Exception as e:
-        conn.rollback() # Hacemos rollback si algo falla en el proceso
+        conn.rollback()
         print(f"Error al eliminar terapeuta: {e}")
         messages.error(request, f"No se pudo eliminar el registro: {str(e)}")
     finally:
         conn.close()
-        
     return redirect('lista_terapeutas')
 
 def lista_caballos(request):
@@ -501,7 +478,6 @@ def lista_caballos(request):
     
     conn = get_connection()
     cur = conn.cursor()
-    
     valores_previos = None
     hubo_error = False
 
@@ -521,7 +497,6 @@ def lista_caballos(request):
         if not re.match(REGEX_MIN_3_LETRAS, nombre):
             messages.error(request, "Error en Nombre del Caballo: Solo letras, mínimo 3 letras por palabra, sin espacios extremos.")
             hubo_error = True
-            
         elif not re.match(REGEX_RAZA, raza):
             messages.error(request, "Error en Raza: Solo letras, mínimo 3 letras por palabra y sin espacios extremos.")
             hubo_error = True
@@ -615,7 +590,6 @@ def eliminar_caballo(request, id_caballo):
         print(f"Error al eliminar: {e}")
     finally:
         conn.close()
-        
     return redirect('lista_caballos')
 
 def lista_padres(request):
@@ -624,7 +598,6 @@ def lista_padres(request):
     
     conn = get_connection()
     cur = conn.cursor()
-    
     valores_previos = None
     hubo_error = False
 
@@ -642,11 +615,9 @@ def lista_padres(request):
         if not re.match(REGEX_MIN_3_LETRAS, nombre):
             messages.error(request, "Error en Nombre: Solo letras, un espacio intermedio, mínimo 3 letras por palabra y sin espacios extremos.")
             hubo_error = True
-            
         elif telefono and not re.match(REGEX_TELEFONO, telefono):
             messages.error(request, "Error en Teléfono: El número telefónico debe constar de exactamente 10 dígitos.")
             hubo_error = True
-            
         elif correo and not re.match(REGEX_GMAIL, correo):
             messages.error(request, "Error en Correo: Debe ser una dirección terminada en @gmail.com sin espacios.")
             hubo_error = True
@@ -684,7 +655,6 @@ def lista_padres(request):
                 registro.append(str(col).strip())
         padres.append(registro)
     conn.close()
-    
     return render(request, 'gestion/padres.html', {
         'padres': padres,
         'valores': valores_previos
@@ -749,7 +719,6 @@ def editar_padres(request, id_persona):
             messages.error(request, f"Error al actualizar: {str(e)}")
         finally:
             conn.close()
-            
         return redirect('lista_padres')
 
 def eliminar_padres(request, id_persona):
@@ -771,8 +740,11 @@ def eliminar_padres(request, id_persona):
 def agendar_cita(request):
     if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
         return redirect('login_view')
+    
     conn = get_connection()
     cur = conn.cursor()
+    
+    # === 1. PROCESAR EL REGISTRO DE LA CITA (POST) ===
     if request.method == 'POST':
         id_paciente = request.POST.get('paciente')
         id_terapeuta = request.POST.get('terapeuta')
@@ -795,11 +767,15 @@ def agendar_cita(request):
             cur.execute(query_update_caballo, (id_caballo,))
 
             conn.commit()
+            conn.close() # Se cierra la conexión únicamente si el flujo POST termina de manera exitosa
             return redirect('agendar')
         except Exception as e:
+            conn.rollback() # Corrección: Asegura el rollback si el insert o update fallan
             print(f"Error al insertar sesión o actualizar estados: {e}")
-        finally:
-            conn.close()
+            messages.error(request, "Error al guardar la sesión en la base de datos.")
+            # No cerramos aquí, dejamos que continúe para recargar los catálogos en la pantalla con el error
+
+    # === 2. LEER CATÁLOGOS PARA RENDERIZAR LA VISTA (GET o tras error en POST) ===
     pacientes = []
     terapeutas = []
     caballos = []
@@ -840,8 +816,10 @@ def agendar_cita(request):
 
     except Exception as e:
         print(f"Error al consultar catálogos: {e}")
+        messages.error(request, "Error al consultar los catálogos de citas.")
     finally:
-        conn.close()
+        conn.close() # Corrección estructural: Se cierra de forma segura al finalizar el flujo completo
+        
     return render(request, 'gestion/agendar.html', {
         'pacientes': pacientes,
         'terapeutas': terapeutas,
@@ -853,8 +831,10 @@ def agendar_cita(request):
 def editar_cita(request, id_sesion):
     if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
         return redirect('login_view')
+    
     conn = get_connection()
     cur = conn.cursor()
+    
     if request.method == 'GET':
         try:
             cur.execute("""
@@ -866,6 +846,7 @@ def editar_cita(request, id_sesion):
             
             if not row:
                 messages.error(request, "La sesión no existe.")
+                conn.close()
                 return redirect('index')
             
             dt_actual = row[3]
@@ -884,6 +865,7 @@ def editar_cita(request, id_sesion):
 
             cur.execute("SELECT ID_PERSONA, NOMBRE FROM PERSONAS WHERE UPPER(TRIM(ROL)) = 'TERAPEUTA' ORDER BY NOMBRE")
             terapeutas = [(t[0], str(t[1]).strip()) for t in cur.fetchall()]
+            
             cur.execute("""
                 SELECT ID_CABALLO, NOMBRE_C 
                 FROM CABALLOS 
@@ -892,20 +874,20 @@ def editar_cita(request, id_sesion):
             """, (cita_data['id_caballo_actual'],))
             caballos = [(c[0], str(c[1]).strip()) for c in cur.fetchall()]
 
+            return render(request, 'gestion/editar_cita.html', {
+                'id_sesion': id_sesion,
+                'cita_data': cita_data,
+                'pacientes': pacientes,
+                'terapeutas': terapeutas,
+                'caballos': caballos
+            })
         except Exception as e:
             print(f"Error al cargar datos de edición: {e}")
             messages.error(request, "Error al recuperar datos de la sesión.")
             return redirect('index')
         finally:
-            conn.close()
+            conn.close() # Cierre seguro únicamente al terminar la consulta GET
 
-        return render(request, 'gestion/editar_cita.html', {
-            'id_sesion': id_sesion,
-            'cita_data': cita_data,
-            'pacientes': pacientes,
-            'terapeutas': terapeutas,
-            'caballos': caballos
-        })
     elif request.method == 'POST':
         id_paciente = request.POST.get('paciente')
         id_terapeuta = request.POST.get('terapeuta')
@@ -922,6 +904,7 @@ def editar_cita(request, id_sesion):
                 WHERE ID_SESION = ?
             """
             cur.execute(query_update, (id_paciente, id_terapeuta, id_caballo_nuevo, fecha_hora_str, id_sesion))
+            
             if str(id_caballo_nuevo) != str(id_caballo_anterior):
                 if id_caballo_anterior:
                     cur.execute("""
@@ -939,7 +922,7 @@ def editar_cita(request, id_sesion):
             print(f"Error al modificar sesión: {e}")
             messages.error(request, "No se pudo actualizar la sesión.")
         finally:
-            conn.close()
+            conn.close() # Cierre seguro únicamente al terminar el proceso del POST
             
         return redirect('index')
 
