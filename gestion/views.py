@@ -452,7 +452,7 @@ def editar_terapeuta(request, id_persona):
         messages.error(request, "El terapeuta solicitado no existe.")
         return redirect('lista_terapeutas')
     terapeuta = [str(col).strip() if col is not None else "" for col in fila]
-    return render(request, 'gestion/editar_terapeuta.html', {'terapeuta': terapeutas})
+    return render(request, 'gestion/editar_terapeuta.html', {'terapeuta': terapeuta})
 
 def eliminar_terapeuta(request, id_persona):
     if request.session.get('rol') not in ['ADMINISTRADOR', 'ADMIN']: 
