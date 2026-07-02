@@ -4,13 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Apuntamos formalmente a la dirección IP de tu nodo de datos remoto
-DB_PATH = 'localhost:/var/firebird/data/sistema_equinoterapia.fdb'
+DB_PATH = os.getenv('DB_PATH')
 
 def get_connection():
     return fdb.connect(
         database=DB_PATH,
         user='SYSDBA',
-        password='1234',  # Tu contraseña asignada al motor de la VM
+        password='1234',
         charset='UTF-8'
     )
